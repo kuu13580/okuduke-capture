@@ -16,8 +16,12 @@ import {
   RefreshCw,
   Scan,
   Settings,
+  Share,
+  Shield,
+  Smartphone,
   Trash2,
   X,
+  Zap,
 } from "lucide";
 
 type IconNodeItem = readonly [string, Record<string, string | number>];
@@ -76,3 +80,7 @@ export const iconPlus = createIcon(Plus, 18);
 export const iconChevronDown = createIcon(ChevronDown, 16);
 export const iconScan = createIcon(Scan, 22);
 export const iconArrowLeft = createIcon(ArrowLeft, 18);
+export const iconSmartphone = createIcon(Smartphone, 18);
+export const iconShare = createIcon(Share, 16);
+export const iconZap = createIcon(Zap, 18);
+export const iconShield = createIcon(Shield, 18);
