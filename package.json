@@ -1,0 +1,32 @@
+{
+  "name": "okuduke-capture",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vp dev",
+    "build": "vp build",
+    "preview": "vp preview",
+    "check": "vp check",
+    "lint": "vp lint",
+    "format": "vp fmt",
+    "test": "vp test"
+  },
+  "dependencies": {
+    "lit": "^3.3.3",
+    "sashimi-ui": "^2.1.0"
+  },
+  "devDependencies": {
+    "typescript": "~6.0.2",
+    "vite": "catalog:",
+    "vite-plus": "catalog:"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.8.1",
+      "onFail": "download"
+    }
+  },
+  "packageManager": "pnpm@10.33.0"
+}
