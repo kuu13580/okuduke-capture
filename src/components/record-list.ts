@@ -24,7 +24,29 @@ export class RecordList extends LitElement {
     this.dispatchEvent(new CustomEvent("clear-all", { bubbles: true, composed: true }));
   }
 
-  private handleEdit(record: OkudukeRecord) {
+  private handleSelect(record: OkudukeRecord) {
+    this.dispatchEvent(
+      new CustomEvent("select", {
+        detail: record,
+        bubbles: true,
+        composed: true,
+      }),
+    );
+  }
+
+  private handleToggleComplete(record: OkudukeRecord, e: Event) {
+    e.stopPropagation();
+    this.dispatchEvent(
+      new CustomEvent("toggle-complete", {
+        detail: record,
+        bubbles: true,
+        composed: true,
+      }),
+    );
+  }
+
+  private handleEdit(record: OkudukeRecord, e: Event) {
+    e.stopPropagation();
     this.dispatchEvent(
       new CustomEvent("edit", {
         detail: record,
@@ -34,7 +56,8 @@ export class RecordList extends LitElement {
     );
   }
 
-  private handleDelete(id: string) {
+  private handleDelete(id: string, e: Event) {
+    e.stopPropagation();
     this.dispatchEvent(
       new CustomEvent("delete", {
         detail: id,
@@ -54,7 +77,7 @@ export class RecordList extends LitElement {
         <div class="summary-actions">
           <button
             type="button"
-            class="btn-action"
+            class="button tertiary btn-action"
             @click=${this.handleCopyTsv}
             ?disabled=${this.records.length === 0}
             title="GoogleスプレッドシートやExcelに直接貼り付け可能な形式でコピー"
@@ -63,7 +86,7 @@ export class RecordList extends LitElement {
           </button>
           <button
             type="button"
-            class="btn-action"
+            class="button tertiary btn-action"
             @click=${this.handleDownloadCsv}
             ?disabled=${this.records.length === 0}
             title="CSVファイルとしてダウンロード"
@@ -72,7 +95,7 @@ export class RecordList extends LitElement {
           </button>
           <button
             type="button"
-            class="btn-action btn-danger-action"
+            class="button tertiary btn-action btn-danger-action"
             @click=${this.handleClearAll}
             ?disabled=${this.records.length === 0}
             title="全件消去"
@@ -98,8 +121,25 @@ export class RecordList extends LitElement {
                 <div class="records-list">
                   ${this.records.map(
                     (r, idx) => html`
-                      <div class="record-item">
-                        <div class="record-index">${this.records.length - idx}</div>
+                      <div
+                        class="record-item ${r.isCompleted ? "is-completed" : ""}"
+                        @click=${() => this.handleSelect(r)}
+                        role="button"
+                        tabindex="0"
+                      >
+                        <div class="record-meta-col">
+                          <input
+                            type="checkbox"
+                            class="checkbox"
+                            .checked=${Boolean(r.isCompleted)}
+                            @change=${(e: Event) => this.handleToggleComplete(r, e)}
+                            @click=${(e: Event) => e.stopPropagation()}
+                            title="${r.isCompleted ? "完了を取り消す" : "完了にする"}"
+                            aria-label="${r.isCompleted ? "完了を取り消す" : "完了にする"}"
+                          />
+                          <div class="record-index">${this.records.length - idx}</div>
+                        </div>
+
                         <div class="record-body">
                           <h3 class="record-title">${r.title || "（無題）"}</h3>
                           <div class="record-grid">
@@ -122,11 +162,12 @@ export class RecordList extends LitElement {
                           </div>
                           ${r.memo ? html`<div class="record-memo">${r.memo}</div>` : ""}
                         </div>
+
                         <div class="record-controls">
                           <button
                             type="button"
                             class="btn-row-action"
-                            @click=${() => this.handleEdit(r)}
+                            @click=${(e: Event) => this.handleEdit(r, e)}
                             title="編集"
                           >
                             ${iconEdit(16)}
@@ -134,7 +175,7 @@ export class RecordList extends LitElement {
                           <button
                             type="button"
                             class="btn-row-action btn-row-delete"
-                            @click=${() => this.handleDelete(r.id)}
+                            @click=${(e: Event) => this.handleDelete(r.id, e)}
                             title="削除"
                           >
                             ${iconTrash(16)}

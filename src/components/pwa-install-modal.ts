@@ -82,9 +82,6 @@ export class PwaInstallModal extends LitElement {
             </div>
 
             <div class="pwa-install-guide">
-              <div class="guide-title">
-                <strong>どこからインストールするか</strong>
-              </div>
               ${
                 this.isIosDevice
                   ? html`
@@ -149,18 +146,18 @@ export class PwaInstallModal extends LitElement {
           </div>
 
           <div class="modal-box-footer pwa-modal-footer">
-            <button type="button" class="btn-sub" @click=${() => this.handleClose(true)}>
+            <button type="button" class="button secondary" @click=${() => this.handleClose(true)}>
               後で
             </button>
             ${
               this.hasInstallPrompt
                 ? html`
-                    <button type="button" class="btn-main" @click=${this.handleInstall}>
+                    <button type="button" class="button" @click=${this.handleInstall}>
                       ${iconDownload(16)} インストール
                     </button>
                   `
                 : html`
-                    <button type="button" class="btn-main" @click=${() => this.handleClose(false)}>
+                    <button type="button" class="button" @click=${() => this.handleClose(false)}>
                       ${iconCheck(16)} わかった
                     </button>
                   `

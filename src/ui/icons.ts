@@ -15,19 +15,16 @@ import {
   Plus,
   RefreshCw,
   Scan,
-  Settings,
   Share,
   Shield,
   Smartphone,
   Trash2,
   X,
   Zap,
+  type IconNode,
 } from "lucide";
 
-type IconNodeItem = readonly [string, Record<string, string | number>];
-type IconNode = readonly IconNodeItem[];
-
-function renderNode([tag, attrs]: IconNodeItem): SVGTemplateResult {
+function renderNode([tag, attrs]: IconNode[number]): SVGTemplateResult {
   switch (tag) {
     case "path":
       return svg`<path d="${attrs.d}"></path>`;
@@ -65,7 +62,6 @@ function createIcon(iconNode: IconNode, defaultSize = 18) {
 export const iconCamera = createIcon(Camera, 20);
 export const iconCameraOff = createIcon(CameraOff, 20);
 export const iconImage = createIcon(Image, 20);
-export const iconSettings = createIcon(Settings, 18);
 export const iconBookOpen = createIcon(BookOpen, 18);
 export const iconX = createIcon(X, 18);
 export const iconCheck = createIcon(Check, 18);

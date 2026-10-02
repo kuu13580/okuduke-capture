@@ -1,3 +1,4 @@
+@import "sashimi-ui/default.theme.css";
 @import "sashimi-ui/bundle.css";
 
 :root {
@@ -9,6 +10,25 @@
   --accent-red: #ef4444;
   font-family:
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", Meiryo, sans-serif;
+
+  /* Sashimi UI overrides */
+  --sui-color-key-primary: var(--primary-color);
+  --sui-color-on-key-primary: #ffffff;
+  --sui-checkbox-size: 20px;
+  --sui-button-height: 38px;
+  --sui-button-horizontal-padding: 14px;
+  --sui-roundness-normal: 8px;
+  --sui-roundness-strong: 8px;
+  --sui-color-surface: var(--bg-card);
+  --sui-color-outline-primary: var(--border-color);
+  --sui-color-outline-secondary: var(--border-color);
+  --sui-color-neutral-primary: var(--text-main);
+  --sui-color-neutral-secondary: var(--text-muted);
+}
+
+.checkbox {
+  --sui-color-key-primary: var(--accent-green);
+  --sui-color-on-key-primary: #ffffff;
 }
 
 @media (prefers-color-scheme: light) {
@@ -24,6 +44,8 @@
     --topbar-bg: rgba(255, 255, 255, 0.85);
     --bottombar-bg: rgba(255, 255, 255, 0.9);
     --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    --sui-color-key-tertiary: rgba(2, 132, 199, 0.2);
+    --sui-color-highlight-secondary: #f1f5f9;
   }
 }
 
@@ -40,6 +62,10 @@
     --topbar-bg: rgba(9, 9, 11, 0.85);
     --bottombar-bg: rgba(24, 24, 27, 0.9);
     --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    --sui-color-key-primary: var(--primary-color);
+    --sui-color-on-key-primary: #ffffff;
+    --sui-color-key-tertiary: rgba(2, 132, 199, 0.3);
+    --sui-color-highlight-secondary: #27272a;
   }
 }
 
@@ -55,9 +81,17 @@ body {
   height: 100dvh;
   width: 100vw;
   overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+[role="button"] {
   user-select: none;
   -webkit-user-select: none;
-  -webkit-tap-highlight-color: transparent;
+}
+
+.checkbox {
+  flex-shrink: 0;
 }
 
 /* メインレイアウト */
@@ -111,20 +145,6 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-.btn-header-icon {
-  background: transparent;
-  border: 1px solid var(--border-color);
-  color: var(--text-main);
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  padding: 0;
 }
 
 .btn-header-pill {
@@ -201,17 +221,11 @@ body {
 }
 
 .btn-action {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: var(--bg-card-sub);
-  border: 1px solid var(--border-color);
-  color: var(--text-main);
-  border-radius: 6px;
-  padding: 6px 10px;
+  --sui-button-height: 30px;
+  --sui-button-horizontal-padding: 8px;
   font-size: 0.8rem;
   font-weight: 600;
-  cursor: pointer;
+  gap: 4px;
   white-space: nowrap;
 }
 
@@ -221,7 +235,11 @@ body {
 }
 
 .btn-danger-action {
-  color: var(--accent-red);
+  color: var(--accent-red) !important;
+}
+
+.btn-danger-action:hover {
+  border-color: var(--accent-red) !important;
 }
 
 /* レコードカード一覧コンテナ */
@@ -277,14 +295,36 @@ body {
   display: flex;
   gap: 12px;
   box-shadow: var(--card-shadow);
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    opacity 0.15s;
+}
+
+.record-item:hover {
+  border-color: var(--primary-color);
+}
+
+.record-item.is-completed {
+  background: var(--bg-card-sub);
+  opacity: 0.76;
+}
+
+.record-meta-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 22px;
+  padding-top: 1px;
+  flex-shrink: 0;
 }
 
 .record-index {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 700;
   color: var(--text-muted);
-  min-width: 20px;
-  padding-top: 2px;
 }
 
 .record-body {
@@ -292,12 +332,21 @@ body {
   min-width: 0;
 }
 
+.record-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
 .record-title {
-  margin: 0 0 6px 0;
+  margin: 0;
   font-size: 1rem;
   font-weight: 700;
   word-break: break-all;
   color: var(--text-main);
+  flex: 1;
 }
 
 .record-grid {
@@ -844,38 +893,23 @@ body {
   padding-top: 8px;
 }
 
+.sheet-action-row .button {
+  width: 100%;
+  --sui-button-height: 46px;
+  border-radius: 10px;
+}
+
 .btn-sheet-cancel {
   flex: 1;
-  background: transparent;
-  border: 1px solid var(--border-color);
-  color: var(--text-muted);
-  border-radius: 10px;
-  padding: 12px 14px;
   font-size: 0.95rem;
   font-weight: 600;
-  cursor: pointer;
 }
 
 .btn-sheet-confirm {
   flex: 2.2;
-  background: var(--primary-color);
-  border: none;
-  color: #fff;
-  border-radius: 10px;
-  padding: 12px 16px;
   font-size: 1rem;
   font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  cursor: pointer;
   box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
-}
-
-.btn-sheet-confirm:active {
-  background: var(--primary-hover);
-  transform: scale(0.98);
 }
 
 /* ========================================= */
@@ -928,14 +962,14 @@ body {
   gap: 16px;
 }
 
-.modal-box-body label {
+.modal-box-body label:not(.field-check-label) {
   display: flex;
   flex-direction: column;
   gap: 6px;
   font-size: 0.85rem;
 }
 
-.modal-box-body input,
+.modal-box-body input:not([type="checkbox"]):not([type="radio"]),
 .modal-box-body select {
   background: var(--bg-input);
   border: 1px solid var(--border-color);
@@ -952,31 +986,12 @@ body {
   line-height: 1.4;
 }
 
-.settings-advanced {
-  background: var(--bg-card-sub);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-size: 0.85rem;
-}
-
-.settings-advanced summary {
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.advanced-content {
-  margin-top: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
 .modal-box-footer {
   padding: 12px 20px;
   border-top: 1px solid var(--border-color);
   display: flex;
   justify-content: flex-end;
+  gap: 8px;
 }
 
 .btn-main {
@@ -1007,56 +1022,6 @@ body {
   padding: 6px 12px;
   font-size: 0.82rem;
   white-space: nowrap;
-}
-
-/* 設定内のPWA導線 */
-.settings-pwa-banner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 12px;
-  background: var(--bg-card-sub);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-}
-
-.pwa-banner-text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.pwa-banner-text strong {
-  font-size: 0.88rem;
-}
-
-.pwa-banner-text span {
-  font-size: 0.78rem;
-  color: var(--text-muted);
-}
-
-.settings-terms-link-row {
-  display: flex;
-  justify-content: flex-start;
-  padding-top: 2px;
-}
-
-.link-terms-plain {
-  background: transparent;
-  border: none;
-  color: var(--primary-color);
-  font-size: 0.82rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  padding: 4px 6px;
-  border-radius: 6px;
-}
-
-.link-terms-plain:hover {
-  text-decoration: underline;
 }
 
 /* PWAインストール案内モーダル */
@@ -1150,11 +1115,6 @@ body {
   display: flex;
   flex-direction: column;
   gap: 10px;
-}
-
-.guide-title {
-  font-size: 0.85rem;
-  color: var(--primary-color);
 }
 
 .install-steps {
@@ -1391,6 +1351,152 @@ dialog menu {
   to {
     transform: rotate(360deg);
   }
+}
+
+/* ========================================= */
+/* 奥付データ詳細・ワンタップコピーモーダル */
+/* ========================================= */
+.record-detail-modal-box {
+  max-width: 480px;
+}
+
+.detail-header-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.detail-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 20px;
+  max-height: calc(85dvh - 125px);
+  overflow-y: auto;
+}
+
+.detail-fields-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detail-field-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--bg-card-sub);
+  border: 1px solid var(--border-color);
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+
+.detail-field-row.is-clickable {
+  cursor: pointer;
+}
+
+.detail-field-row.is-clickable:hover {
+  border-color: var(--primary-color);
+  background: rgba(2, 132, 199, 0.05);
+}
+
+.detail-field-row.is-checked {
+  background: rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+.field-check-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.field-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.field-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.field-val {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-main);
+  word-break: break-all;
+}
+
+.field-val.is-empty {
+  color: var(--text-muted);
+  font-weight: 400;
+  font-size: 0.85rem;
+}
+
+.btn-field-copy {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.btn-field-copy:hover:not(:disabled) {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+  background: var(--bg-card);
+}
+
+.btn-field-copy:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.btn-field-copy.is-copied {
+  background: var(--accent-green);
+  border-color: var(--accent-green);
+  color: #fff;
+}
+
+.detail-modal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  border-top: 1px solid var(--border-color);
+}
+
+.footer-left-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-danger-sub {
+  color: var(--accent-red);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.btn-danger-sub:hover {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: var(--accent-red);
 }
 
 /* ========================================= */

@@ -2,24 +2,17 @@ import { LitElement, html } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import "./components/data-policy-modal.ts";
 import "./components/pwa-install-modal.ts";
+import "./components/record-detail-modal.ts";
 import "./components/record-edit-dialog.ts";
 import "./components/record-list.ts";
 import "./components/result-bottom-sheet.ts";
 import "./components/scanner-view.ts";
-import { extractWithGemini } from "./services/gemini-extractor.ts";
+import { extractWithBff } from "./services/bff-extractor.ts";
 import { processImageSource } from "./services/image-processor.ts";
-import { type ParsedOkuduke, parseOkudukeFromText } from "./services/rule-extractor.ts";
-import {
-  type AppConfig,
-  type GeminiModelId,
-  SUPPORTED_MODELS,
-  generateCsv,
-  generateTsv,
-  type OkudukeRecord,
-} from "./types.ts";
-import { iconAlert, iconDownload, iconImage, iconScan, iconSettings } from "./ui/icons.ts";
+import type { ParsedOkuduke } from "./services/rule-extractor.ts";
+import { generateCsv, generateTsv, type OkudukeRecord } from "./types.ts";
+import { iconDownload, iconImage, iconScan } from "./ui/icons.ts";
 
-const STORAGE_KEY_CONFIG = "okuduke_config";
 const STORAGE_KEY_RECORDS = "okuduke_records";
 
 @customElement("okuduke-app")
@@ -32,20 +25,10 @@ export class OkudukeApp extends LitElement {
   private records: OkudukeRecord[] = [];
 
   @state()
-  private config: AppConfig = {
-    mode: "vlm",
-    geminiApiKey: "",
-    geminiModel: "gemini-3.1-flash-lite",
-  };
-
-  @state()
   private isScannerOpen = false;
 
   @state()
   private isBottomSheetOpen = false;
-
-  @state()
-  private isSettingsOpen = false;
 
   @state()
   private isPwaModalOpen = false;
@@ -73,6 +56,9 @@ export class OkudukeApp extends LitElement {
 
   @state()
   private editingRecord: OkudukeRecord | null = null;
+
+  @state()
+  private selectedRecordForDetail: OkudukeRecord | null = null;
 
   @state()
   private feedbackMessage = "";
@@ -129,21 +115,6 @@ export class OkudukeApp extends LitElement {
 
   private loadState() {
     try {
-      const savedConfig = localStorage.getItem(STORAGE_KEY_CONFIG);
-      if (savedConfig) {
-        const parsed = JSON.parse(savedConfig);
-        let model: GeminiModelId = parsed.geminiModel;
-        if (!SUPPORTED_MODELS.some((m) => m.id === model)) {
-          model = "gemini-3.1-flash-lite";
-        }
-
-        this.config = {
-          mode: parsed.mode || "vlm",
-          geminiApiKey: parsed.geminiApiKey || "",
-          geminiModel: model,
-        };
-      }
-
       const savedRecords = localStorage.getItem(STORAGE_KEY_RECORDS);
       if (savedRecords) {
         this.records = JSON.parse(savedRecords);
@@ -156,11 +127,6 @@ export class OkudukeApp extends LitElement {
   private saveRecords(records: OkudukeRecord[]) {
     this.records = records;
     localStorage.setItem(STORAGE_KEY_RECORDS, JSON.stringify(records));
-  }
-
-  private saveConfig(partial: Partial<AppConfig>) {
-    this.config = { ...this.config, ...partial };
-    localStorage.setItem(STORAGE_KEY_CONFIG, JSON.stringify(this.config));
   }
 
   private openScanner() {
@@ -182,7 +148,7 @@ export class OkudukeApp extends LitElement {
 
   private async handleCapture(e: CustomEvent<{ base64: string; mimeType: string }>) {
     this.isBottomSheetOpen = true;
-    await this.processImage(e.detail.base64, e.detail.mimeType, this.config.geminiModel);
+    await this.processImage(e.detail.base64, e.detail.mimeType);
   }
 
   private async handleFileSelected(e: Event) {
@@ -201,7 +167,7 @@ export class OkudukeApp extends LitElement {
       this.analysisProgress = "画像を最適化中...";
 
       const processed = await processImageSource(file, { maxDimension: 1280, quality: 0.8 });
-      await this.processImage(processed.base64, processed.mimeType, this.config.geminiModel);
+      await this.processImage(processed.base64, processed.mimeType);
     } catch (err) {
       this.isAnalyzing = false;
       this.analysisProgress = "";
@@ -211,36 +177,13 @@ export class OkudukeApp extends LitElement {
     }
   }
 
-  private async processImage(base64Data: string, mimeType: string, targetModel: GeminiModelId) {
+  private async processImage(base64Data: string, mimeType: string) {
     const analysisId = ++this.currentAnalysisId;
     this.isAnalyzing = true;
     this.analysisProgress = "奥付を読み取り中...";
 
     try {
-      let parsed: ParsedOkuduke;
-
-      if (this.config.mode === "vlm") {
-        if (!this.config.geminiApiKey) {
-          throw new Error("Gemini APIキーを設定してください。");
-        }
-        parsed = await extractWithGemini(
-          base64Data,
-          mimeType,
-          this.config.geminiApiKey,
-          targetModel,
-        );
-      } else {
-        await new Promise((r) => setTimeout(r, 400));
-        const sampleText = `
-          東方幻想郷奇譚
-          発行日: 2026年8月16日
-          サークル: 幻想書房
-          著者: 博麗博人
-          印刷所: 日光企画
-          コミックマーケット108 初版
-        `;
-        parsed = parseOkudukeFromText(sampleText);
-      }
+      const parsed = await extractWithBff(base64Data, mimeType);
 
       if (analysisId !== this.currentAnalysisId) return;
       this.pendingParsed = parsed;
@@ -248,9 +191,6 @@ export class OkudukeApp extends LitElement {
       if (analysisId !== this.currentAnalysisId) return;
       const msg = err instanceof Error ? err.message : String(err);
       this.showFeedback(`読み取りエラー: ${msg}`);
-      if (!this.config.geminiApiKey) {
-        this.isSettingsOpen = true;
-      }
     } finally {
       if (analysisId === this.currentAnalysisId) {
         this.isAnalyzing = false;
@@ -317,7 +257,31 @@ export class OkudukeApp extends LitElement {
     const updated = e.detail;
     this.saveRecords(this.records.map((r) => (r.id === updated.id ? updated : r)));
     this.editingRecord = null;
+    if (this.selectedRecordForDetail?.id === updated.id) {
+      this.selectedRecordForDetail = updated;
+    }
     this.showFeedback("変更を保存しました");
+  }
+
+  private handleSelectRecord(e: CustomEvent<OkudukeRecord>) {
+    this.selectedRecordForDetail = e.detail;
+  }
+
+  private handleUpdateRecord(e: CustomEvent<OkudukeRecord>) {
+    const updated = e.detail;
+    this.saveRecords(this.records.map((r) => (r.id === updated.id ? updated : r)));
+    if (this.selectedRecordForDetail?.id === updated.id) {
+      this.selectedRecordForDetail = updated;
+    }
+  }
+
+  private handleToggleComplete(e: CustomEvent<OkudukeRecord>) {
+    const target = e.detail;
+    const updated: OkudukeRecord = { ...target, isCompleted: !target.isCompleted };
+    this.saveRecords(this.records.map((r) => (r.id === updated.id ? updated : r)));
+    if (this.selectedRecordForDetail?.id === updated.id) {
+      this.selectedRecordForDetail = updated;
+    }
   }
 
   private async triggerInstall() {
@@ -364,51 +328,26 @@ export class OkudukeApp extends LitElement {
                 ? html`
                     <button
                       type="button"
-                      class="btn-header-pill install-pill"
+                      class="chip active"
                       @click=${() => {
                         this.isPwaModalOpen = true;
                       }}
                       title="アプリをインストール"
                     >
-                      ${iconDownload(15)}
-                      <span class="install-text">インストール</span>
+                      ${iconDownload(14)}
+                      <span>インストール</span>
                     </button>
                   `
                 : ""
             }
-            ${
-              !this.config.geminiApiKey && this.config.mode === "vlm"
-                ? html`
-                    <button
-                      type="button"
-                      class="btn-header-pill warning-pill"
-                      @click=${() => {
-                        this.isSettingsOpen = true;
-                      }}
-                      title="APIキーが未設定です"
-                    >
-                      ${iconAlert(16)}
-                      <span>キー未設定</span>
-                    </button>
-                  `
-                : ""
-            }
-            <button
-              type="button"
-              class="btn-header-icon"
-              @click=${() => {
-                this.isSettingsOpen = true;
-              }}
-              title="設定"
-            >
-              ${iconSettings(18)}
-            </button>
           </div>
         </header>
 
         <main class="main-content">
           <record-list
             .records=${this.records}
+            @select=${this.handleSelectRecord}
+            @toggle-complete=${this.handleToggleComplete}
             @edit=${(e: CustomEvent<OkudukeRecord>) => {
               this.editingRecord = e.detail;
             }}
@@ -477,22 +416,6 @@ export class OkudukeApp extends LitElement {
           @confirm=${this.handleConfirmParsed}
         ></result-bottom-sheet>
 
-        <settings-modal
-          .isOpen=${this.isSettingsOpen}
-          .config=${this.config}
-          .isInstalled=${this.isInstalled}
-          @close=${() => {
-            this.isSettingsOpen = false;
-          }}
-          @save-config=${(e: CustomEvent<Partial<AppConfig>>) => this.saveConfig(e.detail)}
-          @open-pwa-modal=${() => {
-            this.isPwaModalOpen = true;
-          }}
-          @open-terms-modal=${() => {
-            this.isTermsModalOpen = true;
-          }}
-        ></settings-modal>
-
         <pwa-install-modal
           .isOpen=${this.isPwaModalOpen}
           .hasInstallPrompt=${Boolean(this.deferredInstallPrompt)}
@@ -508,6 +431,23 @@ export class OkudukeApp extends LitElement {
             this.isTermsModalOpen = false;
           }}
         ></data-policy-modal>
+
+        <record-detail-modal
+          .isOpen=${Boolean(this.selectedRecordForDetail)}
+          .record=${this.selectedRecordForDetail}
+          @close=${() => {
+            this.selectedRecordForDetail = null;
+          }}
+          @update-record=${this.handleUpdateRecord}
+          @edit=${(e: CustomEvent<OkudukeRecord>) => {
+            this.selectedRecordForDetail = null;
+            this.editingRecord = e.detail;
+          }}
+          @delete=${(e: CustomEvent<string>) => {
+            this.selectedRecordForDetail = null;
+            this.deleteRecord(e.detail);
+          }}
+        ></record-detail-modal>
 
         <record-edit-dialog
           .record=${this.editingRecord}

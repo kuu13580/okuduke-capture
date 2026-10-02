@@ -215,7 +215,7 @@ export class ScannerView extends LitElement {
                   <div class="scanner-inactive">
                     <div class="inactive-icon">${iconCamera(40)}</div>
                     <p>カメラが停止しています</p>
-                    <button type="button" class="btn-main" @click=${this.startCamera}>
+                    <button type="button" class="button" @click=${this.startCamera}>
                       ${iconCamera(18)} カメラを起動する
                     </button>
                   </div>

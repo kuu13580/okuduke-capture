@@ -72,23 +72,35 @@ export class RecordEditDialog extends LitElement {
                   </div>
                   <label>
                     タイトル
-                    <input name="title" type="text" .value=${this.record.title} required />
+                    <input
+                      class="input"
+                      name="title"
+                      type="text"
+                      .value=${this.record.title}
+                      required
+                    />
                   </label>
                   <label>
                     サークル名
-                    <input name="circle" type="text" .value=${this.record.circle} />
+                    <input class="input" name="circle" type="text" .value=${this.record.circle} />
                   </label>
                   <label>
                     著者/発行者
-                    <input name="author" type="text" .value=${this.record.author} />
+                    <input class="input" name="author" type="text" .value=${this.record.author} />
                   </label>
                   <label>
                     発行日
-                    <input name="publishDate" type="text" .value=${this.record.publishDate} />
+                    <input
+                      class="input"
+                      name="publishDate"
+                      type="text"
+                      .value=${this.record.publishDate}
+                    />
                   </label>
                   <label>
                     印刷所
                     <input
+                      class="input"
                       name="printingCompany"
                       type="text"
                       .value=${this.record.printingCompany}
@@ -96,13 +108,13 @@ export class RecordEditDialog extends LitElement {
                   </label>
                   <label>
                     備考
-                    <input name="memo" type="text" .value=${this.record.memo} />
+                    <input class="input" name="memo" type="text" .value=${this.record.memo} />
                   </label>
                   <menu>
-                    <button type="button" class="btn-sub" @click=${this.handleClose}>
+                    <button type="button" class="button secondary" @click=${this.handleClose}>
                       キャンセル
                     </button>
-                    <button type="submit" class="btn-main">${iconCheck(16)} 保存</button>
+                    <button type="submit" class="button">${iconCheck(16)} 保存</button>
                   </menu>
                 </form>
               `
