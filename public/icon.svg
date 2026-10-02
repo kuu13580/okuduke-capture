@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="128" fill="#18181b"/>
+  <rect x="32" y="32" width="448" height="448" rx="96" fill="#27272a" stroke="#3f3f46" stroke-width="8"/>
+  <g transform="translate(106, 106)" stroke="#38bdf8" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <!-- Book -->
+    <path d="M40 240c30-20 70-20 110 0 40-20 80-20 110 0V40c-30-20-70-20-110 0-40-20-80-20-110 0v200z" stroke="#e2e8f0" stroke-width="16" fill="#09090b"/>
+    <line x1="150" y1="40" x2="150" y2="240" stroke="#e2e8f0" stroke-width="16"/>
+    <!-- Scanner beam -->
+    <line x1="20" y1="140" x2="280" y2="140" stroke="#38bdf8" stroke-width="16" stroke-dasharray="8 8"/>
+    <!-- Corner brackets (focus guide) -->
+    <path d="M10 50 V10 H50"/>
+    <path d="M250 10 H290 V50"/>
+    <path d="M10 230 V270 H50"/>
+    <path d="M290 230 V270 H250"/>
+  </g>
+</svg>
