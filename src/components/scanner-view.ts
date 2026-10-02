@@ -18,6 +18,9 @@ export class ScannerView extends LitElement {
   @property({ type: Boolean })
   isAnalyzing = false;
 
+  @property({ type: Boolean })
+  isPaused = false;
+
   @state()
   private isCameraActive = false;
 
@@ -29,6 +32,11 @@ export class ScannerView extends LitElement {
         this.startCamera().catch(() => {});
       } else {
         this.stopCamera();
+      }
+    }
+    if (changedProperties.has("isPaused") && this.isOpen && this.mediaStream) {
+      for (const track of this.mediaStream.getVideoTracks()) {
+        track.enabled = !this.isPaused;
       }
     }
   }

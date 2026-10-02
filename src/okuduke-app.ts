@@ -191,7 +191,6 @@ export class OkudukeApp extends LitElement {
 
   private async processSelectedFile(file: File) {
     try {
-      this.isScannerOpen = true;
       this.isBottomSheetOpen = true;
       this.isAnalyzing = true;
       this.analysisProgress = "画像を最適化中...";
@@ -199,6 +198,9 @@ export class OkudukeApp extends LitElement {
       const processed = await processImageSource(file, { maxDimension: 1280, quality: 0.8 });
       await this.processImage(processed.base64, processed.mimeType, this.config.geminiModel);
     } catch (err) {
+      this.isAnalyzing = false;
+      this.analysisProgress = "";
+      this.isBottomSheetOpen = false;
       const msg = err instanceof Error ? err.message : String(err);
       this.showFeedback(`画像読み込みエラー: ${msg}`);
     }
@@ -449,20 +451,21 @@ export class OkudukeApp extends LitElement {
           .isOpen=${this.isScannerOpen}
           .recordCount=${this.records.length}
           .isAnalyzing=${this.isAnalyzing}
+          .isPaused=${this.isBottomSheetOpen}
           @close=${this.closeScanner}
           @capture=${this.handleCapture}
           @file-selected=${(e: CustomEvent<File>) => this.processSelectedFile(e.detail)}
           @feedback=${(e: CustomEvent<string>) => this.showFeedback(e.detail)}
-        >
-          <result-bottom-sheet
-            .isOpen=${this.isBottomSheetOpen}
-            .isAnalyzing=${this.isAnalyzing}
-            .analysisProgress=${this.analysisProgress}
-            .pendingParsed=${this.pendingParsed}
-            @close=${this.closeBottomSheet}
-            @confirm=${this.handleConfirmParsed}
-          ></result-bottom-sheet>
-        </scanner-view>
+        ></scanner-view>
+
+        <result-bottom-sheet
+          .isOpen=${this.isBottomSheetOpen}
+          .isAnalyzing=${this.isAnalyzing}
+          .analysisProgress=${this.analysisProgress}
+          .pendingParsed=${this.pendingParsed}
+          @close=${this.closeBottomSheet}
+          @confirm=${this.handleConfirmParsed}
+        ></result-bottom-sheet>
 
         <settings-modal
           .isOpen=${this.isSettingsOpen}

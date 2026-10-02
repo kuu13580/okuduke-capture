@@ -15,7 +15,10 @@ export class PwaInstallModal extends LitElement {
   hasInstallPrompt = false;
 
   private get isIosDevice(): boolean {
-    return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+    const ua = navigator.userAgent;
+    const isIos = /iPad|iPhone|iPod/.test(ua);
+    const isMacTouch = /Macintosh/.test(ua) && navigator.maxTouchPoints > 1;
+    return (isIos || isMacTouch) && !(window as any).MSStream;
   }
 
   private handleClose(dismissForever = false) {
@@ -107,25 +110,40 @@ export class PwaInstallModal extends LitElement {
                       </div>
                       <p class="guide-note">※ Safari以外のブラウザではSafariで開き直してください</p>
                     `
-                  : html`
-                      <div class="install-steps">
-                        <div class="install-step-row">
-                          <span class="step-badge">1</span>
-                          <span class="step-desc">
-                            下の <strong>「インストール」ボタン</strong> をタップ
-                          </span>
+                  : this.hasInstallPrompt
+                    ? html`
+                        <div class="install-steps">
+                          <div class="install-step-row">
+                            <span class="step-badge">1</span>
+                            <span class="step-desc">
+                              下の <strong>「インストール」ボタン</strong> をタップ
+                            </span>
+                          </div>
+                          <div class="install-step-row">
+                            <span class="step-badge">2</span>
+                            <span class="step-desc">
+                              確認ダイアログで <strong>「インストール」</strong> を選択
+                            </span>
+                          </div>
                         </div>
-                        <div class="install-step-row">
-                          <span class="step-badge">2</span>
-                          <span class="step-desc">
-                            確認ダイアログで <strong>「インストール」</strong> を選択
-                          </span>
+                      `
+                    : html`
+                        <div class="install-steps">
+                          <div class="install-step-row">
+                            <span class="step-badge">1</span>
+                            <span class="step-desc">
+                              ブラウザ右上メニュー <strong>「︙」</strong> をタップ
+                            </span>
+                          </div>
+                          <div class="install-step-row">
+                            <span class="step-badge">2</span>
+                            <span class="step-desc">
+                              <strong>「アプリをインストール」</strong> または
+                              <strong>「ホーム画面に追加」</strong> を選択
+                            </span>
+                          </div>
                         </div>
-                      </div>
-                      <p class="guide-note">
-                        ※ またはブラウザ右上メニュー「︙」→「アプリをインストール」
-                      </p>
-                    `
+                      `
               }
             </div>
           </div>
