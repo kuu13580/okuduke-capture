@@ -77,6 +77,8 @@ export class OkudukeApp extends LitElement {
   @state()
   private feedbackMessage = "";
 
+  private currentAnalysisId = 0;
+
   private onBeforeInstallPrompt = (e: Event) => {
     e.preventDefault();
     this.deferredInstallPrompt = e as any;
@@ -171,8 +173,11 @@ export class OkudukeApp extends LitElement {
   }
 
   private closeBottomSheet() {
+    this.currentAnalysisId++;
     this.isBottomSheetOpen = false;
     this.pendingParsed = null;
+    this.isAnalyzing = false;
+    this.analysisProgress = "";
   }
 
   private async handleCapture(e: CustomEvent<{ base64: string; mimeType: string }>) {
@@ -207,6 +212,7 @@ export class OkudukeApp extends LitElement {
   }
 
   private async processImage(base64Data: string, mimeType: string, targetModel: GeminiModelId) {
+    const analysisId = ++this.currentAnalysisId;
     this.isAnalyzing = true;
     this.analysisProgress = "奥付を読み取り中...";
 
@@ -236,16 +242,20 @@ export class OkudukeApp extends LitElement {
         parsed = parseOkudukeFromText(sampleText);
       }
 
+      if (analysisId !== this.currentAnalysisId) return;
       this.pendingParsed = parsed;
     } catch (err) {
+      if (analysisId !== this.currentAnalysisId) return;
       const msg = err instanceof Error ? err.message : String(err);
       this.showFeedback(`読み取りエラー: ${msg}`);
       if (!this.config.geminiApiKey) {
         this.isSettingsOpen = true;
       }
     } finally {
-      this.isAnalyzing = false;
-      this.analysisProgress = "";
+      if (analysisId === this.currentAnalysisId) {
+        this.isAnalyzing = false;
+        this.analysisProgress = "";
+      }
     }
   }
 

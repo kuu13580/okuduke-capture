@@ -92,7 +92,7 @@ export class PwaInstallModal extends LitElement {
                         <div class="install-step-row">
                           <span class="step-badge">1</span>
                           <span class="step-desc">
-                            Safari画面下の <strong>共有ボタン</strong> ${iconShare(15)} をタップ
+                            Safariの <strong>共有ボタン</strong> ${iconShare(15)} をタップ
                           </span>
                         </div>
                         <div class="install-step-row">

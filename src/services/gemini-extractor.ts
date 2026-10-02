@@ -6,7 +6,8 @@ export async function extractWithGemini(
   apiKey: string,
   modelName: string = "gemini-3.1-flash-lite",
 ): Promise<ParsedOkuduke> {
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+  const encodedModel = encodeURIComponent(modelName);
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodedModel}:generateContent`;
 
   const prompt = `この画像は同人誌の奥付（おくづけ）ページです。
 記載されている情報から以下の項目を抽出してください。
@@ -56,6 +57,7 @@ export async function extractWithGemini(
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "x-goog-api-key": apiKey,
     },
     body: JSON.stringify(payload),
   });

@@ -78,7 +78,19 @@ export class ScannerView extends LitElement {
         audio: false,
       });
 
+      if (!this.isOpen) {
+        for (const track of stream.getTracks()) {
+          track.stop();
+        }
+        return;
+      }
+
       this.mediaStream = stream;
+      if (this.isPaused) {
+        for (const track of stream.getVideoTracks()) {
+          track.enabled = false;
+        }
+      }
       video.srcObject = stream;
       await video.play();
     } catch (err) {
