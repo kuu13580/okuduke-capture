@@ -25,8 +25,8 @@
 Gemini API キーを設定します（ローカル実行用）。
 
 ```bash
-cp worker/.dev.vars.example worker/.dev.vars
-# worker/.dev.vars 内の GEMINI_API_KEY に自身のキーを設定
+cp worker/.dev.vars.example .dev.vars
+# .dev.vars 内の GEMINI_API_KEY に自身のキーを設定
 ```
 
 ### 2. 開発サーバーの起動
