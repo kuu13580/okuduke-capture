@@ -14,6 +14,7 @@ import { generateCsv, generateTsv, type OkudukeRecord } from "./types.ts";
 import { iconDownload, iconImage, iconScan } from "./ui/icons.ts";
 
 const STORAGE_KEY_RECORDS = "okuduke_records";
+const STORAGE_KEY_PWA_PROMPTED = "okuduke_pwa_dismissed";
 
 @customElement("okuduke-app")
 export class OkudukeApp extends LitElement {
@@ -68,9 +69,10 @@ export class OkudukeApp extends LitElement {
   private onBeforeInstallPrompt = (e: Event) => {
     e.preventDefault();
     this.deferredInstallPrompt = e as any;
-    const dismissed = localStorage.getItem("okuduke_pwa_dismissed");
-    if (!dismissed && !this.isInstalled) {
+    const prompted = localStorage.getItem(STORAGE_KEY_PWA_PROMPTED);
+    if (!prompted && !this.isInstalled) {
       this.isPwaModalOpen = true;
+      localStorage.setItem(STORAGE_KEY_PWA_PROMPTED, "true");
     }
   };
 
@@ -106,9 +108,10 @@ export class OkudukeApp extends LitElement {
     this.isInstalled = isStandalone;
 
     if (!isStandalone && this.isIosDevice) {
-      const dismissed = localStorage.getItem("okuduke_pwa_dismissed");
-      if (!dismissed) {
+      const prompted = localStorage.getItem(STORAGE_KEY_PWA_PROMPTED);
+      if (!prompted) {
         this.isPwaModalOpen = true;
+        localStorage.setItem(STORAGE_KEY_PWA_PROMPTED, "true");
       }
     }
   }
@@ -290,19 +293,18 @@ export class OkudukeApp extends LitElement {
       const choice = await this.deferredInstallPrompt.userChoice;
       if (choice.outcome === "accepted") {
         this.isInstalled = true;
-        this.isPwaModalOpen = false;
       }
+      this.isPwaModalOpen = false;
+      localStorage.setItem(STORAGE_KEY_PWA_PROMPTED, "true");
       this.deferredInstallPrompt = null;
     } else {
-      this.closePwaModal(true);
+      this.closePwaModal();
     }
   }
 
-  private closePwaModal(dismissForever = false) {
+  private closePwaModal() {
     this.isPwaModalOpen = false;
-    if (dismissForever) {
-      localStorage.setItem("okuduke_pwa_dismissed", "true");
-    }
+    localStorage.setItem(STORAGE_KEY_PWA_PROMPTED, "true");
   }
 
   private showFeedback(msg: string) {
@@ -423,9 +425,7 @@ export class OkudukeApp extends LitElement {
         <pwa-install-modal
           .isOpen=${this.isPwaModalOpen}
           .hasInstallPrompt=${Boolean(this.deferredInstallPrompt)}
-          @close=${(e: CustomEvent<{ dismissForever: boolean }>) => {
-            this.closePwaModal(e.detail?.dismissForever);
-          }}
+          @close=${this.closePwaModal}
           @install=${this.triggerInstall}
         ></pwa-install-modal>
 

@@ -21,14 +21,15 @@ export class PwaInstallModal extends LitElement {
     return (isIos || isMacTouch) && !(window as any).MSStream;
   }
 
-  private handleClose(dismissForever = false) {
-    this.dispatchEvent(
-      new CustomEvent("close", {
-        detail: { dismissForever },
-        bubbles: true,
-        composed: true,
-      }),
-    );
+  private handleClose() {
+    this.dispatchEvent(new CustomEvent("close", { bubbles: true, composed: true }));
+  }
+
+  private handleKeydown(e: KeyboardEvent) {
+    if (e.key === "Escape") {
+      e.stopPropagation();
+      this.handleClose();
+    }
   }
 
   private handleInstall() {
@@ -39,14 +40,22 @@ export class PwaInstallModal extends LitElement {
     if (!this.isOpen) return html``;
 
     return html`
-      <div class="modal-backdrop" @click=${() => this.handleClose(false)}>
-        <div class="modal-box pwa-modal-box" @click=${(e: Event) => e.stopPropagation()}>
+      <div class="modal-backdrop" role="presentation" @click=${this.handleClose}>
+        <div
+          class="modal-box pwa-modal-box"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="pwa-install-modal-title"
+          tabindex="-1"
+          @click=${(e: Event) => e.stopPropagation()}
+          @keydown=${this.handleKeydown}
+        >
           <div class="modal-box-header">
-            <h3>アプリをインストール</h3>
+            <h3 id="pwa-install-modal-title">アプリをインストール</h3>
             <button
               type="button"
               class="btn-dialog-close"
-              @click=${() => this.handleClose(false)}
+              @click=${this.handleClose}
               aria-label="閉じる"
             >
               ${iconX(18)}
@@ -146,9 +155,7 @@ export class PwaInstallModal extends LitElement {
           </div>
 
           <div class="modal-box-footer pwa-modal-footer">
-            <button type="button" class="button secondary" @click=${() => this.handleClose(true)}>
-              後で
-            </button>
+            <button type="button" class="button secondary" @click=${this.handleClose}>後で</button>
             ${
               this.hasInstallPrompt
                 ? html`
@@ -157,7 +164,7 @@ export class PwaInstallModal extends LitElement {
                     </button>
                   `
                 : html`
-                    <button type="button" class="button" @click=${() => this.handleClose(false)}>
+                    <button type="button" class="button" @click=${this.handleClose}>
                       ${iconCheck(16)} わかった
                     </button>
                   `
