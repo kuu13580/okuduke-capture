@@ -10,6 +10,7 @@
 - **フロントエンド / UI**: [Lit](https://lit.dev/) (Light DOM運用)
 - **スタイリング**: [Sashimi UI v2](https://github.com/yuto-hasegawa/sashimi-ui)
 - **BFF / バックエンド**: [Cloudflare Workers](https://workers.cloudflare.com/) (Static Assets + [Hono](https://hono.dev/))
+  - レートリミット: Cloudflare Rate Limiting (60回/分/IP・連続スキャンを阻害しない安全設定)
 - **AI 解析**: Google Gemini API (`gemini-3.1-flash-lite`) ※サーバー側でAPIキーを安全に中継
 - **計測**: Google Analytics 4 (GA4) ※本番ホストのみ・匿名利用統計
 - **ツールチェーン**: [Vite+](https://viteplus.dev/) (`vite-plus` / `vp`)
