@@ -1,7 +1,12 @@
 import { Hono } from "hono";
 
-type Bindings = {
+export interface RateLimitBinding {
+  limit(options: { key: string }): Promise<{ success: boolean }>;
+}
+
+export type Bindings = {
   GEMINI_API_KEY?: string;
+  RATE_LIMITER?: RateLimitBinding;
 };
 
 export type ExtractRequestBody = {
@@ -63,6 +68,28 @@ app.get("/api/health", (c) => {
 });
 
 app.post("/api/extract", async (c) => {
+  const limiter = c.env.RATE_LIMITER;
+  if (limiter) {
+    const clientIp =
+      c.req.header("cf-connecting-ip") ||
+      c.req.header("x-forwarded-for")?.split(",")[0]?.trim() ||
+      "127.0.0.1";
+    try {
+      const { success } = await limiter.limit({ key: clientIp });
+      if (!success) {
+        c.header("Retry-After", "60");
+        return c.json(
+          {
+            error: "短時間のアクセス数が上限を超過しました。少し待ってから再試行してください。",
+          },
+          429,
+        );
+      }
+    } catch (err) {
+      console.warn("Rate limit check failed (fail-open):", err);
+    }
+  }
+
   const contentLength = c.req.header("content-length");
   if (contentLength && Number.parseInt(contentLength, 10) > MAX_PAYLOAD_BYTES) {
     return c.json({ error: "画像サイズが上限（2MB）を超えています" }, 413);
