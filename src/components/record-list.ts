@@ -70,38 +70,40 @@ export class RecordList extends LitElement {
   render() {
     return html`
       <div class="list-summary-bar">
-        <div class="summary-left">
-          <span class="count-badge">${this.records.length}件</span>
-          <span class="summary-label">の奥付データ</span>
-        </div>
-        <div class="summary-actions">
-          <button
-            type="button"
-            class="button tertiary btn-action"
-            @click=${this.handleCopyTsv}
-            ?disabled=${this.records.length === 0}
-            title="GoogleスプレッドシートやExcelに直接貼り付け可能な形式でコピー"
-          >
-            ${iconCopy(15)} TSVコピー
-          </button>
-          <button
-            type="button"
-            class="button tertiary btn-action"
-            @click=${this.handleDownloadCsv}
-            ?disabled=${this.records.length === 0}
-            title="CSVファイルとしてダウンロード"
-          >
-            ${iconDownload(15)} CSV保存
-          </button>
-          <button
-            type="button"
-            class="button tertiary btn-action btn-danger-action"
-            @click=${this.handleClearAll}
-            ?disabled=${this.records.length === 0}
-            title="全件消去"
-          >
-            ${iconTrash(15)}
-          </button>
+        <div class="summary-bar-inner">
+          <div class="summary-left">
+            <span class="count-badge">${this.records.length}件</span>
+            <span class="summary-label">の奥付データ</span>
+          </div>
+          <div class="summary-actions">
+            <button
+              type="button"
+              class="button tertiary btn-action"
+              @click=${this.handleCopyTsv}
+              ?disabled=${this.records.length === 0}
+              title="GoogleスプレッドシートやExcelに直接貼り付け可能な形式でコピー"
+            >
+              ${iconCopy(15)} TSVコピー
+            </button>
+            <button
+              type="button"
+              class="button tertiary btn-action"
+              @click=${this.handleDownloadCsv}
+              ?disabled=${this.records.length === 0}
+              title="CSVファイルとしてダウンロード"
+            >
+              ${iconDownload(15)} CSV保存
+            </button>
+            <button
+              type="button"
+              class="button tertiary btn-action btn-danger-action"
+              @click=${this.handleClearAll}
+              ?disabled=${this.records.length === 0}
+              title="全件消去"
+            >
+              ${iconTrash(15)}
+            </button>
+          </div>
         </div>
       </div>
 

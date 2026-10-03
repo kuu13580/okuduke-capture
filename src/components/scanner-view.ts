@@ -158,40 +158,42 @@ export class ScannerView extends LitElement {
     return html`
       <div class="scanner-fullscreen">
         <div class="scanner-topbar">
-          <button
-            type="button"
-            class="btn-scanner-back"
-            @click=${this.emitClose}
-            title="リストに戻る"
-          >
-            ${iconArrowLeft(20)}
-            <span>完了 (${this.recordCount}冊)</span>
-          </button>
+          <div class="scanner-topbar-inner">
+            <button
+              type="button"
+              class="btn-scanner-back"
+              @click=${this.emitClose}
+              title="リストに戻る"
+            >
+              ${iconArrowLeft(20)}
+              <span>完了 (${this.recordCount}冊)</span>
+            </button>
 
-          <div class="scanner-topbar-right">
-            ${
-              this.isCameraActive
-                ? html`
-                    <button
-                      type="button"
-                      class="btn-scanner-icon"
-                      @click=${this.stopCamera}
-                      title="カメラ一時停止"
-                    >
-                      ${iconCameraOff(18)}
-                    </button>
-                  `
-                : html`
-                    <button
-                      type="button"
-                      class="btn-scanner-icon"
-                      @click=${this.startCamera}
-                      title="カメラ起動"
-                    >
-                      ${iconCamera(18)}
-                    </button>
-                  `
-            }
+            <div class="scanner-topbar-right">
+              ${
+                this.isCameraActive
+                  ? html`
+                      <button
+                        type="button"
+                        class="btn-scanner-icon"
+                        @click=${this.stopCamera}
+                        title="カメラ一時停止"
+                      >
+                        ${iconCameraOff(18)}
+                      </button>
+                    `
+                  : html`
+                      <button
+                        type="button"
+                        class="btn-scanner-icon"
+                        @click=${this.startCamera}
+                        title="カメラ起動"
+                      >
+                        ${iconCamera(18)}
+                      </button>
+                    `
+              }
+            </div>
           </div>
         </div>
 
@@ -224,29 +226,31 @@ export class ScannerView extends LitElement {
         </div>
 
         <div class="scanner-bottombar">
-          <label class="btn-scanner-sub" title="写真から読み取る">
-            ${iconImage(22)}
-            <input
-              type="file"
-              accept="image/*"
-              style="display: none;"
-              @change=${this.handleFileInput}
-            />
-          </label>
+          <div class="scanner-bottombar-inner">
+            <label class="btn-scanner-sub" title="写真から読み取る">
+              ${iconImage(22)}
+              <input
+                type="file"
+                accept="image/*"
+                style="display: none;"
+                @change=${this.handleFileInput}
+              />
+            </label>
 
-          <button
-            type="button"
-            class="btn-read-trigger"
-            ?disabled=${this.isAnalyzing}
-            @click=${this.handleCapture}
-            title="奥付を読み取る"
-          >
-            <div class="read-trigger-inner">
-              ${this.isAnalyzing ? html`<div class="trigger-spinner"></div>` : iconScan(30)}
-            </div>
-          </button>
+            <button
+              type="button"
+              class="btn-read-trigger"
+              ?disabled=${this.isAnalyzing}
+              @click=${this.handleCapture}
+              title="奥付を読み取る"
+            >
+              <div class="read-trigger-inner">
+                ${this.isAnalyzing ? html`<div class="trigger-spinner"></div>` : iconScan(30)}
+              </div>
+            </button>
 
-          <div style="width: 48px;"></div>
+            <div style="width: 48px;"></div>
+          </div>
         </div>
 
         <slot></slot>

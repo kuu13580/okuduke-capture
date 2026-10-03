@@ -318,28 +318,30 @@ export class OkudukeApp extends LitElement {
     return html`
       <div class="app-layout">
         <header class="main-header">
-          <div class="header-left">
-            <img src="/icon.svg" alt="" class="header-app-logo" width="28" height="28" />
-            <h1 class="brand-title">奥付キャプチャー</h1>
-          </div>
-          <div class="header-right">
-            ${
-              !this.isInstalled
-                ? html`
-                    <button
-                      type="button"
-                      class="chip active"
-                      @click=${() => {
-                        this.isPwaModalOpen = true;
-                      }}
-                      title="アプリをインストール"
-                    >
-                      ${iconDownload(14)}
-                      <span>インストール</span>
-                    </button>
-                  `
-                : ""
-            }
+          <div class="header-inner">
+            <div class="header-left">
+              <img src="/icon.svg" alt="" class="header-app-logo" width="28" height="28" />
+              <h1 class="brand-title">奥付キャプチャー</h1>
+            </div>
+            <div class="header-right">
+              ${
+                !this.isInstalled
+                  ? html`
+                      <button
+                        type="button"
+                        class="chip active"
+                        @click=${() => {
+                          this.isPwaModalOpen = true;
+                        }}
+                        title="アプリをインストール"
+                      >
+                        ${iconDownload(14)}
+                        <span>インストール</span>
+                      </button>
+                    `
+                  : ""
+              }
+            </div>
           </div>
         </header>
 
@@ -361,39 +363,41 @@ export class OkudukeApp extends LitElement {
         </main>
 
         <footer class="main-bottom-bar">
-          <div class="bottom-actions-row">
-            <label class="btn-file-sub" title="写真アルバムから選択">
-              ${iconImage(20)}
-              <input
-                type="file"
-                accept="image/*"
-                style="display: none;"
-                @change=${this.handleFileSelected}
-              />
-            </label>
+          <div class="bottom-bar-inner">
+            <div class="bottom-actions-row">
+              <label class="btn-file-sub" title="写真アルバムから選択">
+                ${iconImage(20)}
+                <input
+                  type="file"
+                  accept="image/*"
+                  style="display: none;"
+                  @change=${this.handleFileSelected}
+                />
+              </label>
 
-            <button
-              type="button"
-              class="btn-primary-scan"
-              @click=${this.openScanner}
-              title="カメラで奥付をスキャン"
-            >
-              ${iconScan(22)}
-              <span>奥付をスキャン</span>
-            </button>
+              <button
+                type="button"
+                class="btn-primary-scan"
+                @click=${this.openScanner}
+                title="カメラで奥付をスキャン"
+              >
+                ${iconScan(22)}
+                <span>奥付をスキャン</span>
+              </button>
+            </div>
+
+            <p class="terms-notice-footer">
+              ご利用にあたり<button
+                type="button"
+                class="link-terms-inline"
+                @click=${() => {
+                  this.isTermsModalOpen = true;
+                }}
+              >
+                データの取り扱いについて</button
+              >をご確認ください
+            </p>
           </div>
-
-          <p class="terms-notice-footer">
-            ご利用にあたり<button
-              type="button"
-              class="link-terms-inline"
-              @click=${() => {
-                this.isTermsModalOpen = true;
-              }}
-            >
-              データの取り扱いについて</button
-            >をご確認ください
-          </p>
         </footer>
 
         <scanner-view
