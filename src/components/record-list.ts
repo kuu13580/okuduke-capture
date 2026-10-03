@@ -126,6 +126,13 @@ export class RecordList extends LitElement {
                       <div
                         class="record-item ${r.isCompleted ? "is-completed" : ""}"
                         @click=${() => this.handleSelect(r)}
+                        @keydown=${(e: KeyboardEvent) => {
+                          if (e.target !== e.currentTarget) return;
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            this.handleSelect(r);
+                          }
+                        }}
                         role="button"
                         tabindex="0"
                       >

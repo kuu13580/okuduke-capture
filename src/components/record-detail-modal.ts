@@ -1,5 +1,5 @@
-import { LitElement, html } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { LitElement, html, type PropertyValues } from "lit";
+import { customElement, property, query, state } from "lit/decorators.js";
 import type { OkudukeRecord } from "../types.ts";
 import { iconCheck, iconCopy, iconEdit, iconTrash, iconX } from "../ui/icons.ts";
 
@@ -33,6 +33,22 @@ export class RecordDetailModal extends LitElement {
 
   @state()
   private recentlyCopiedKey: string | null = null;
+
+  @query(".modal-box")
+  private modalBox?: HTMLElement;
+
+  override updated(changedProperties: PropertyValues) {
+    if (changedProperties.has("isOpen") && this.isOpen) {
+      this.modalBox?.focus();
+    }
+  }
+
+  private handleKeydown(e: KeyboardEvent) {
+    if (e.key === "Escape") {
+      e.stopPropagation();
+      this.handleClose();
+    }
+  }
 
   private handleClose() {
     this.dispatchEvent(new CustomEvent("close", { bubbles: true, composed: true }));
@@ -93,8 +109,15 @@ export class RecordDetailModal extends LitElement {
           this.recentlyCopiedKey = null;
         }
       }, 1500);
-    } catch {
-      // コピー失敗時は何もしない
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      this.dispatchEvent(
+        new CustomEvent("feedback", {
+          detail: `${label}のコピーに失敗しました: ${msg}`,
+          bubbles: true,
+          composed: true,
+        }),
+      );
     }
   }
 
@@ -129,8 +152,16 @@ export class RecordDetailModal extends LitElement {
     const checkedSet = new Set(this.record.checkedFields || []);
 
     return html`
-      <div class="modal-backdrop" @click=${this.handleClose}>
-        <div class="modal-box record-detail-modal-box" @click=${(e: Event) => e.stopPropagation()}>
+      <div class="modal-backdrop" role="presentation" @click=${this.handleClose}>
+        <div
+          class="modal-box record-detail-modal-box"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="record-detail-modal-title"
+          tabindex="-1"
+          @click=${(e: Event) => e.stopPropagation()}
+          @keydown=${this.handleKeydown}
+        >
           <div class="modal-box-header">
             <div class="detail-header-title">
               <input
@@ -142,7 +173,7 @@ export class RecordDetailModal extends LitElement {
                 title="${isCompleted ? "完了を取り消す" : "完了にする"}"
                 aria-label="${isCompleted ? "完了を取り消す" : "完了にする"}"
               />
-              <h3>奥付データ詳細</h3>
+              <h3 id="record-detail-modal-title">奥付データ詳細</h3>
             </div>
             <button
               type="button"

@@ -19,14 +19,14 @@ export async function extractWithBff(
 
   if (!response.ok) {
     let errorMsg = `APIエラー (${response.status})`;
+    const text = await response.text().catch(() => "");
     try {
-      const errorJson = (await response.json()) as { error?: string };
+      const errorJson = JSON.parse(text) as { error?: string };
       if (errorJson?.error) {
         errorMsg = errorJson.error;
       }
     } catch {
-      const text = await response.text();
-      if (text) errorMsg = text;
+      if (text) errorMsg = text.slice(0, 200);
     }
     throw new Error(errorMsg);
   }

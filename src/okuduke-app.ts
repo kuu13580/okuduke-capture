@@ -451,6 +451,7 @@ export class OkudukeApp extends LitElement {
             this.selectedRecordForDetail = null;
             this.deleteRecord(e.detail);
           }}
+          @feedback=${(e: CustomEvent<string>) => this.showFeedback(e.detail)}
         ></record-detail-modal>
 
         <record-edit-dialog
