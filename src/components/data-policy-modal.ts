@@ -37,29 +37,25 @@ export class DataPolicyModal extends LitElement {
           </div>
 
           <div class="modal-box-body terms-modal-body">
-            <p class="terms-lead">
-              「奥付キャプチャー」では、安心してご利用いただくために画像およびデータの取り扱い方針を定めています。
-            </p>
-
             <div class="terms-card-list">
               <div class="terms-card-item">
                 <div class="terms-item-icon">${iconCheck(16)}</div>
                 <div class="terms-item-text">
-                  <strong>Google（Gemini API）への画像送信</strong>
-                  <span>
-                    奥付の文字認識・抽出を行うため、撮影または選択された画像データを Google の AI
-                    モデル（Gemini API）に送信して解析します。
-                  </span>
+                  <strong>Gemini API への画像送信</strong>
+                  <span
+                    >AIによる文字認識のため、撮影画像のみを Google Gemini API
+                    に送信して解析します。</span
+                  >
                 </div>
               </div>
 
               <div class="terms-card-item">
                 <div class="terms-item-icon">${iconCheck(16)}</div>
                 <div class="terms-item-text">
-                  <strong>サーバー・端末への画像非保存</strong>
-                  <span>
-                    撮影された画像はブラウザのメモリ上でのみ一時処理され、本サービスのサーバーや端末ストレージに保存されることは一切ありません。
-                  </span>
+                  <strong>画像の非保存</strong>
+                  <span
+                    >画像はメモリ上でのみ一時処理され、サーバーや端末ストレージには一切保存されません。</span
+                  >
                 </div>
               </div>
 
@@ -67,21 +63,19 @@ export class DataPolicyModal extends LitElement {
                 <div class="terms-item-icon">${iconCheck(16)}</div>
                 <div class="terms-item-text">
                   <strong>抽出データのローカル管理</strong>
-                  <span>
-                    認識されたタイトルや著者名などの奥付テキストは、お使いの端末（ブラウザのローカルストレージ）にのみ保存され、外部へ送信されません。
-                  </span>
+                  <span
+                    >抽出された奥付データ（タイトル・サークル等）は、端末（ブラウザ）にのみ保存されます。</span
+                  >
                 </div>
               </div>
 
               <div class="terms-card-item">
                 <div class="terms-item-icon">${iconCheck(16)}</div>
                 <div class="terms-item-text">
-                  <strong>利用状況の計測（Google アナリティクス）</strong>
-                  <span>
-                    機能改善および利用傾向の把握のため、Google
-                    アナリティクス（GA4）を使用して機能利用回数（スキャン回数、出力回数等）を計測しています。標準設定ではページビューとページURLも計測し、_ga
-                    CookieのクライアントIDで利用者を仮名識別します。画像データや読み取られた奥付テキスト（作品名・サークル名等）は独自イベントのパラメーターに含めません。
-                  </span>
+                  <strong>利用状況の計測（GA4）</strong>
+                  <span
+                    >品質改善のため利用回数等を計測しています（画像や奥付の内容は一切含みません）。</span
+                  >
                 </div>
               </div>
             </div>
