@@ -18,6 +18,37 @@
       content="同人誌の奥付をカメラで即座に連続スキャンしリスト化するWebアプリ"
     />
     <link rel="stylesheet" href="./src/index.css" />
+    <!-- Google tag (gtag.js) - 本番環境のみロード -->
+    <script>
+      (function () {
+        var host = location.hostname;
+        var isLocal =
+          host === "localhost" ||
+          host === "127.0.0.1" ||
+          host === "0.0.0.0" ||
+          host.startsWith("192.168.") ||
+          host.startsWith("10.") ||
+          host.endsWith(".local");
+
+        if (isLocal) {
+          // ローカル開発環境ではGA4を完全無効化
+          window["ga-disable-G-TJP9JFVSWW"] = true;
+          return;
+        }
+
+        var script = document.createElement("script");
+        script.async = true;
+        script.src = "https://www.googletagmanager.com/gtag/js?id=G-TJP9JFVSWW";
+        document.head.appendChild(script);
+
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+          dataLayer.push(arguments);
+        }
+        gtag("js", new Date());
+        gtag("config", "G-TJP9JFVSWW");
+      })();
+    </script>
     <script type="module" src="/src/okuduke-app.ts"></script>
     <script>
       if ("serviceWorker" in navigator && location.protocol === "https:") {

@@ -72,6 +72,17 @@ export class DataPolicyModal extends LitElement {
                   </span>
                 </div>
               </div>
+
+              <div class="terms-card-item">
+                <div class="terms-item-icon">${iconCheck(16)}</div>
+                <div class="terms-item-text">
+                  <strong>利用状況の匿名計測（Google アナリティクス）</strong>
+                  <span>
+                    機能改善および利用傾向の把握のため、Google
+                    アナリティクス（GA4）を使用して匿名の機能利用回数（スキャン回数、出力回数等）を計測しています。画像データや読み取られた奥付テキスト（作品名・サークル名等）が送信されることは一切ありません。
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
 
