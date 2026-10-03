@@ -76,7 +76,7 @@ export class DataPolicyModal extends LitElement {
           </div>
 
           <div class="modal-box-footer terms-modal-footer">
-            <button type="button" class="btn-main" @click=${this.handleClose}>
+            <button type="button" class="button" @click=${this.handleClose}>
               ${iconCheck(16)} 閉じる
             </button>
           </div>

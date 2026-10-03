@@ -45,6 +45,7 @@ export class ResultBottomSheet extends LitElement {
       publishDate: (formData.get("publishDate") as string) || "",
       printingCompany: (formData.get("printingCompany") as string) || "",
       memo: (formData.get("memo") as string) || "",
+      rawText: this.pendingParsed.rawText || "",
     };
 
     this.dispatchEvent(
@@ -85,6 +86,7 @@ export class ResultBottomSheet extends LitElement {
                       <label class="field-title">
                         <span class="field-label">タイトル</span>
                         <input
+                          class="input"
                           name="title"
                           type="text"
                           .value=${this.pendingParsed.title}
@@ -97,6 +99,7 @@ export class ResultBottomSheet extends LitElement {
                         <label>
                           <span class="field-label">サークル名</span>
                           <input
+                            class="input"
                             name="circle"
                             type="text"
                             .value=${this.pendingParsed.circle}
@@ -106,6 +109,7 @@ export class ResultBottomSheet extends LitElement {
                         <label>
                           <span class="field-label">著者/発行者</span>
                           <input
+                            class="input"
                             name="author"
                             type="text"
                             .value=${this.pendingParsed.author}
@@ -118,6 +122,7 @@ export class ResultBottomSheet extends LitElement {
                         <label>
                           <span class="field-label">発行日</span>
                           <input
+                            class="input"
                             name="publishDate"
                             type="text"
                             .value=${this.pendingParsed.publishDate}
@@ -127,6 +132,7 @@ export class ResultBottomSheet extends LitElement {
                         <label>
                           <span class="field-label">印刷所</span>
                           <input
+                            class="input"
                             name="printingCompany"
                             type="text"
                             .value=${this.pendingParsed.printingCompany}
@@ -138,6 +144,7 @@ export class ResultBottomSheet extends LitElement {
                       <label>
                         <span class="field-label">備考 / イベント名</span>
                         <input
+                          class="input"
                           name="memo"
                           type="text"
                           .value=${this.pendingParsed.memo}
@@ -146,10 +153,14 @@ export class ResultBottomSheet extends LitElement {
                       </label>
 
                       <div class="sheet-action-row">
-                        <button type="button" class="btn-sheet-cancel" @click=${this.handleClose}>
+                        <button
+                          type="button"
+                          class="button secondary btn-sheet-cancel"
+                          @click=${this.handleClose}
+                        >
                           破棄
                         </button>
-                        <button type="submit" class="btn-sheet-confirm">
+                        <button type="submit" class="button btn-sheet-confirm">
                           ${iconPlus(18)} リストに追加して次へ
                         </button>
                       </div>
