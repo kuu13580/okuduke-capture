@@ -10,6 +10,7 @@ import "./components/scanner-view.ts";
 import { extractWithBff } from "./services/bff-extractor.ts";
 import { processImageSource } from "./services/image-processor.ts";
 import type { ParsedOkuduke } from "./services/rule-extractor.ts";
+import { analytics } from "./services/analytics.ts";
 import { generateCsv, generateTsv, type OkudukeRecord } from "./types.ts";
 import { iconDownload, iconImage, iconScan } from "./ui/icons.ts";
 
@@ -73,6 +74,7 @@ export class OkudukeApp extends LitElement {
     if (!prompted && !this.isInstalled) {
       this.isPwaModalOpen = true;
       localStorage.setItem(STORAGE_KEY_PWA_PROMPTED, "true");
+      analytics.pwaPromptShow();
     }
   };
 
@@ -112,6 +114,7 @@ export class OkudukeApp extends LitElement {
       if (!prompted) {
         this.isPwaModalOpen = true;
         localStorage.setItem(STORAGE_KEY_PWA_PROMPTED, "true");
+        analytics.pwaPromptShow();
       }
     }
   }
@@ -150,6 +153,7 @@ export class OkudukeApp extends LitElement {
   }
 
   private async handleCapture(e: CustomEvent<{ base64: string; mimeType: string }>) {
+    analytics.scanStart("camera");
     this.isBottomSheetOpen = true;
     await this.processImage(e.detail.base64, e.detail.mimeType);
   }
@@ -165,6 +169,7 @@ export class OkudukeApp extends LitElement {
 
   private async processSelectedFile(file: File) {
     try {
+      analytics.scanStart("file");
       this.isBottomSheetOpen = true;
       this.isAnalyzing = true;
       this.analysisProgress = "画像を最適化中...";
@@ -172,6 +177,7 @@ export class OkudukeApp extends LitElement {
       const processed = await processImageSource(file, { maxDimension: 1280, quality: 0.8 });
       await this.processImage(processed.base64, processed.mimeType);
     } catch (err) {
+      analytics.scanError("image_process_failed");
       this.isAnalyzing = false;
       this.analysisProgress = "";
       this.isBottomSheetOpen = false;
@@ -190,8 +196,14 @@ export class OkudukeApp extends LitElement {
 
       if (analysisId !== this.currentAnalysisId) return;
       this.pendingParsed = parsed;
+      analytics.scanSuccess({
+        hasTitle: Boolean(parsed.title),
+        hasCircle: Boolean(parsed.circle),
+        hasAuthor: Boolean(parsed.author),
+      });
     } catch (err) {
       if (analysisId !== this.currentAnalysisId) return;
+      analytics.scanError("extract_failed");
       const msg = err instanceof Error ? err.message : String(err);
       this.showFeedback(`読み取りエラー: ${msg}`);
     } finally {
@@ -216,6 +228,7 @@ export class OkudukeApp extends LitElement {
     };
 
     this.saveRecords([record, ...this.records]);
+    analytics.recordSave();
     this.closeBottomSheet();
     this.showFeedback(`「${record.title || "奥付"}」を追加しました（計${this.records.length}件）`);
   }
@@ -236,6 +249,7 @@ export class OkudukeApp extends LitElement {
     const tsv = generateTsv(this.records);
     try {
       await navigator.clipboard.writeText(tsv);
+      analytics.exportData("tsv", this.records.length);
       this.showFeedback("スプシ用TSVをクリップボードにコピーしました");
     } catch {
       this.showFeedback("クリップボードへのコピーに失敗しました");
@@ -253,6 +267,7 @@ export class OkudukeApp extends LitElement {
     a.download = `okuduke-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
+    analytics.exportData("csv", this.records.length);
     this.showFeedback("CSVファイルをダウンロードしました");
   }
 
@@ -288,6 +303,7 @@ export class OkudukeApp extends LitElement {
   }
 
   private async triggerInstall() {
+    analytics.pwaInstallClick();
     if (this.deferredInstallPrompt) {
       await this.deferredInstallPrompt.prompt();
       const choice = await this.deferredInstallPrompt.userChoice;
@@ -334,6 +350,7 @@ export class OkudukeApp extends LitElement {
                         class="chip active"
                         @click=${() => {
                           this.isPwaModalOpen = true;
+                          analytics.pwaPromptShow();
                         }}
                         title="アプリをインストール"
                       >
