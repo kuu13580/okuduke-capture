@@ -7,22 +7,20 @@ declare global {
 
 export const GA_MEASUREMENT_ID = "G-TJP9JFVSWW";
 
+export const PRODUCTION_HOSTS = new Set([
+  "okuduke.kuu13580.com",
+  "okuduke-capture.kuu13580.workers.dev",
+]);
+
 export const analyticsConfig = {
   // テスト用オーバーライド (null: 自動判定, true: 強制無効, false: 強制有効)
   disabledOverride: null as boolean | null,
 };
 
-export function isLocalEnvironment(): boolean {
-  if (typeof window === "undefined") return true;
+export function isProductionHost(): boolean {
+  if (typeof window === "undefined") return false;
   const host = window.location?.hostname || "";
-  return (
-    host === "localhost" ||
-    host === "127.0.0.1" ||
-    host === "0.0.0.0" ||
-    host.startsWith("192.168.") ||
-    host.startsWith("10.") ||
-    host.endsWith(".local")
-  );
+  return PRODUCTION_HOSTS.has(host);
 }
 
 export function shouldSendEvents(): boolean {
@@ -30,8 +28,8 @@ export function shouldSendEvents(): boolean {
     return !analyticsConfig.disabledOverride;
   }
   if (typeof window === "undefined") return false;
-  // Vite開発サーバー実行中、またはローカルIP/ホストの場合は送信しない
-  if (import.meta.env.DEV || isLocalEnvironment()) {
+  // 開発モード（Vite dev）または未許可ホストの場合は送信しない
+  if (import.meta.env.DEV || !isProductionHost()) {
     return false;
   }
   return true;

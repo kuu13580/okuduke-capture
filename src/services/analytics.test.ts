@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   analytics,
   analyticsConfig,
-  isLocalEnvironment,
+  isProductionHost,
   shouldSendEvents,
   trackEvent,
 } from "./analytics.ts";
@@ -25,22 +25,28 @@ describe("analytics service", () => {
   });
 
   describe("environment detection", () => {
-    it("detects localhost and local IPs as local environment", () => {
+    it("allows only whitelisted production hosts", () => {
+      (globalThis as any).window.location.hostname = "okuduke.kuu13580.com";
+      expect(isProductionHost()).toBe(true);
+
+      (globalThis as any).window.location.hostname = "okuduke-capture.kuu13580.workers.dev";
+      expect(isProductionHost()).toBe(true);
+
       (globalThis as any).window.location.hostname = "localhost";
-      expect(isLocalEnvironment()).toBe(true);
+      expect(isProductionHost()).toBe(false);
 
       (globalThis as any).window.location.hostname = "127.0.0.1";
-      expect(isLocalEnvironment()).toBe(true);
+      expect(isProductionHost()).toBe(false);
+
+      (globalThis as any).window.location.hostname = "172.16.0.1";
+      expect(isProductionHost()).toBe(false);
 
       (globalThis as any).window.location.hostname = "192.168.1.10";
-      expect(isLocalEnvironment()).toBe(true);
-
-      (globalThis as any).window.location.hostname = "okuduke.kuu13580.com";
-      expect(isLocalEnvironment()).toBe(false);
+      expect(isProductionHost()).toBe(false);
     });
 
-    it("blocks event sending on localhost or in dev mode", () => {
-      // Vitest では import.meta.env.DEV が true かつ hostname が localhost
+    it("blocks event sending on non-production hosts or dev mode", () => {
+      (globalThis as any).window.location.hostname = "localhost";
       expect(shouldSendEvents()).toBe(false);
 
       trackEvent("test_dev_blocked", { foo: "bar" });

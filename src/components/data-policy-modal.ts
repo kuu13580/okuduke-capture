@@ -76,10 +76,11 @@ export class DataPolicyModal extends LitElement {
               <div class="terms-card-item">
                 <div class="terms-item-icon">${iconCheck(16)}</div>
                 <div class="terms-item-text">
-                  <strong>利用状況の匿名計測（Google アナリティクス）</strong>
+                  <strong>利用状況の計測（Google アナリティクス）</strong>
                   <span>
                     機能改善および利用傾向の把握のため、Google
-                    アナリティクス（GA4）を使用して匿名の機能利用回数（スキャン回数、出力回数等）を計測しています。画像データや読み取られた奥付テキスト（作品名・サークル名等）が送信されることは一切ありません。
+                    アナリティクス（GA4）を使用して機能利用回数（スキャン回数、出力回数等）を計測しています。標準設定ではページビューとページURLも計測し、_ga
+                    CookieのクライアントIDで利用者を仮名識別します。画像データや読み取られた奥付テキスト（作品名・サークル名等）は独自イベントのパラメーターに含めません。
                   </span>
                 </div>
               </div>

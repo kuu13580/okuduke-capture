@@ -22,16 +22,10 @@
     <script>
       (function () {
         var host = location.hostname;
-        var isLocal =
-          host === "localhost" ||
-          host === "127.0.0.1" ||
-          host === "0.0.0.0" ||
-          host.startsWith("192.168.") ||
-          host.startsWith("10.") ||
-          host.endsWith(".local");
+        var isProduction =
+          host === "okuduke.kuu13580.com" || host === "okuduke-capture.kuu13580.workers.dev";
 
-        if (isLocal) {
-          // ローカル開発環境ではGA4を完全無効化
+        if (!isProduction) {
           window["ga-disable-G-TJP9JFVSWW"] = true;
           return;
         }
@@ -42,11 +36,11 @@
         document.head.appendChild(script);
 
         window.dataLayer = window.dataLayer || [];
-        function gtag() {
-          dataLayer.push(arguments);
-        }
-        gtag("js", new Date());
-        gtag("config", "G-TJP9JFVSWW");
+        window.gtag = function () {
+          window.dataLayer.push(arguments);
+        };
+        window.gtag("js", new Date());
+        window.gtag("config", "G-TJP9JFVSWW");
       })();
     </script>
     <script type="module" src="/src/okuduke-app.ts"></script>
