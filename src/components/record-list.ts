@@ -151,25 +151,26 @@ export class RecordList extends LitElement {
 
                         <div class="record-body">
                           <h3 class="record-title">${r.title || "（無題）"}</h3>
-                          <div class="record-grid">
-                            <span class="record-prop">
+                          <div class="record-props">
+                            <div class="record-prop">
                               <span class="prop-key">サークル:</span>
                               <span class="prop-val">${r.circle || "-"}</span>
-                            </span>
-                            <span class="record-prop">
+                            </div>
+                            <div class="record-prop">
                               <span class="prop-key">著者:</span>
                               <span class="prop-val">${r.author || "-"}</span>
+                            </div>
+                          </div>
+                          <div class="record-meta-line">
+                            <span class="meta-item">
+                              <span class="meta-key">発行:</span>
+                              <span class="meta-val">${r.publishDate || "-"}</span>
                             </span>
-                            <span class="record-prop">
-                              <span class="prop-key">発行日:</span>
-                              <span class="prop-val">${r.publishDate || "-"}</span>
-                            </span>
-                            <span class="record-prop">
-                              <span class="prop-key">印刷所:</span>
-                              <span class="prop-val">${r.printingCompany || "-"}</span>
+                            <span class="meta-item">
+                              <span class="meta-key">印刷:</span>
+                              <span class="meta-val">${r.printingCompany || "-"}</span>
                             </span>
                           </div>
-                          ${r.memo ? html`<div class="record-memo">${r.memo}</div>` : ""}
                         </div>
 
                         <div class="record-controls">

@@ -3,6 +3,7 @@ import {
   AlertCircle,
   ArrowLeft,
   BookOpen,
+  Calendar,
   Camera,
   CameraOff,
   Check,
@@ -80,3 +81,4 @@ export const iconSmartphone = createIcon(Smartphone, 18);
 export const iconShare = createIcon(Share, 16);
 export const iconZap = createIcon(Zap, 18);
 export const iconShield = createIcon(Shield, 18);
+export const iconCalendar = createIcon(Calendar, 18);

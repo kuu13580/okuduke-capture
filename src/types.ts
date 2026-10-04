@@ -67,3 +67,20 @@ export function generateCsv(records: OkudukeRecord[]): string {
     )
     .join("\r\n");
 }
+
+export interface FieldCandidates {
+  circles: string[];
+  authors: string[];
+  printingCompanies: string[];
+}
+
+export function extractFieldCandidates(records: OkudukeRecord[]): FieldCandidates {
+  const cleanAndUnique = (values: (string | undefined)[]) =>
+    Array.from(new Set(values.map((v) => v?.trim() || "").filter(Boolean)));
+
+  return {
+    circles: cleanAndUnique(records.map((r) => r.circle)),
+    authors: cleanAndUnique(records.map((r) => r.author)),
+    printingCompanies: cleanAndUnique(records.map((r) => r.printingCompany)),
+  };
+}
