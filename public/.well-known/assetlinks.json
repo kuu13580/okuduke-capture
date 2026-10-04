@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.kuu13580.okuduke.twa",
+      "sha256_cert_fingerprints": [
+        "C9:BF:8D:C1:6D:16:7E:E7:F0:79:4E:17:34:04:81:4D:4B:C6:91:38:51:F5:4E:65:9D:07:C9:F9:5D:76:46:16"
+      ]
+    }
+  }
+]
