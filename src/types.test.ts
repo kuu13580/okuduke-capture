@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { generateCsv, generateTsv, type OkudukeRecord } from "./types.ts";
+import { extractFieldCandidates, generateCsv, generateTsv, type OkudukeRecord } from "./types.ts";
 
 describe("export helpers", () => {
   const sampleRecords: OkudukeRecord[] = [
@@ -43,5 +43,26 @@ describe("export helpers", () => {
       '"タイトル","サークル名","著者/発行者","発行日","印刷所","備考","スキャン日時"',
     );
     expect(lines[2]).toContain('"テスト同人誌 ""2"""');
+  });
+
+  it("extracts unique field candidates from records", () => {
+    const records: OkudukeRecord[] = [
+      ...sampleRecords,
+      {
+        id: "3",
+        title: "テスト同人誌 3",
+        circle: "サークルA", // 重複
+        author: "  ", // 空文字
+        publishDate: "2026/08/17",
+        printingCompany: "日光企画", // 重複
+        memo: "",
+        scannedAt: "2026-10-01 12:10",
+      },
+    ];
+
+    const candidates = extractFieldCandidates(records);
+    expect(candidates.circles).toEqual(["サークルA", "サークルB"]);
+    expect(candidates.authors).toEqual(["作者A", "作者B"]);
+    expect(candidates.printingCompanies).toEqual(["日光企画", "緑陽社"]);
   });
 });

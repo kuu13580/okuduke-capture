@@ -382,11 +382,39 @@ button,
   flex: 1;
 }
 
-.record-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4px 8px;
+.record-props {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   font-size: 0.8rem;
+  margin-top: 3px;
+  margin-bottom: 3px;
+}
+
+.record-meta-line {
+  display: flex;
+  gap: 12px;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+.meta-item {
+  display: flex;
+  gap: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.meta-key {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.meta-val {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .record-prop {

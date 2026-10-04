@@ -1,6 +1,8 @@
 import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
+import { normalizeDateToInput } from "../services/date-formatter.ts";
 import type { ParsedOkuduke } from "../services/rule-extractor.ts";
+import type { FieldCandidates } from "../types.ts";
 import { iconPlus, iconX } from "../ui/icons.ts";
 
 @customElement("result-bottom-sheet")
@@ -20,6 +22,9 @@ export class ResultBottomSheet extends LitElement {
 
   @property({ type: Object })
   pendingParsed: ParsedOkuduke | null = null;
+
+  @property({ type: Object })
+  candidates?: FieldCandidates;
 
   private handleBackdropClick() {
     if (!this.isAnalyzing) {
@@ -72,6 +77,16 @@ export class ResultBottomSheet extends LitElement {
             </button>
           </div>
 
+          <datalist id="sheet-circle-candidates">
+            ${(this.candidates?.circles || []).map((c) => html`<option value=${c}></option>`)}
+          </datalist>
+          <datalist id="sheet-author-candidates">
+            ${(this.candidates?.authors || []).map((a) => html`<option value=${a}></option>`)}
+          </datalist>
+          <datalist id="sheet-printing-candidates">
+            ${(this.candidates?.printingCompanies || []).map((p) => html`<option value=${p}></option>`)}
+          </datalist>
+
           ${
             this.isAnalyzing
               ? html`
@@ -95,28 +110,29 @@ export class ResultBottomSheet extends LitElement {
                         />
                       </label>
 
-                      <div class="fields-row">
-                        <label>
-                          <span class="field-label">サークル名</span>
-                          <input
-                            class="input"
-                            name="circle"
-                            type="text"
-                            .value=${this.pendingParsed.circle}
-                            placeholder="サークル名"
-                          />
-                        </label>
-                        <label>
-                          <span class="field-label">著者/発行者</span>
-                          <input
-                            class="input"
-                            name="author"
-                            type="text"
-                            .value=${this.pendingParsed.author}
-                            placeholder="著者名"
-                          />
-                        </label>
-                      </div>
+                      <label>
+                        <span class="field-label">サークル名</span>
+                        <input
+                          class="input"
+                          name="circle"
+                          type="text"
+                          list="sheet-circle-candidates"
+                          .value=${this.pendingParsed.circle}
+                          placeholder="サークル名"
+                        />
+                      </label>
+
+                      <label>
+                        <span class="field-label">著者/発行者</span>
+                        <input
+                          class="input"
+                          name="author"
+                          type="text"
+                          list="sheet-author-candidates"
+                          .value=${this.pendingParsed.author}
+                          placeholder="著者名"
+                        />
+                      </label>
 
                       <div class="fields-row">
                         <label>
@@ -124,9 +140,8 @@ export class ResultBottomSheet extends LitElement {
                           <input
                             class="input"
                             name="publishDate"
-                            type="text"
-                            .value=${this.pendingParsed.publishDate}
-                            placeholder="例: 2026年8月16日"
+                            type="date"
+                            .value=${normalizeDateToInput(this.pendingParsed.publishDate)}
                           />
                         </label>
                         <label>
@@ -135,6 +150,7 @@ export class ResultBottomSheet extends LitElement {
                             class="input"
                             name="printingCompany"
                             type="text"
+                            list="sheet-printing-candidates"
                             .value=${this.pendingParsed.printingCompany}
                             placeholder="印刷所名"
                           />
@@ -142,13 +158,13 @@ export class ResultBottomSheet extends LitElement {
                       </div>
 
                       <label>
-                        <span class="field-label">備考 / イベント名</span>
+                        <span class="field-label">備考（未分類テキスト・コピペ用）</span>
                         <input
                           class="input"
                           name="memo"
                           type="text"
                           .value=${this.pendingParsed.memo}
-                          placeholder="例: コミケ108 初版"
+                          placeholder="イベント名、連絡先、未分類テキストなど"
                         />
                       </label>
 

@@ -1,6 +1,7 @@
 import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import type { OkudukeRecord } from "../types.ts";
+import { normalizeDateToInput } from "../services/date-formatter.ts";
+import type { FieldCandidates, OkudukeRecord } from "../types.ts";
 import { iconCheck, iconX } from "../ui/icons.ts";
 
 @customElement("record-edit-dialog")
@@ -11,6 +12,9 @@ export class RecordEditDialog extends LitElement {
 
   @property({ type: Object })
   record: OkudukeRecord | null = null;
+
+  @property({ type: Object })
+  candidates?: FieldCandidates;
 
   override updated(changedProperties: Map<string, unknown>) {
     if (changedProperties.has("record")) {
@@ -70,46 +74,93 @@ export class RecordEditDialog extends LitElement {
                       ${iconX(18)}
                     </button>
                   </div>
-                  <label>
-                    タイトル
+
+                  <datalist id="edit-circle-candidates">
+                    ${(this.candidates?.circles || []).map(
+                      (c) => html`<option value=${c}></option>`,
+                    )}
+                  </datalist>
+                  <datalist id="edit-author-candidates">
+                    ${(this.candidates?.authors || []).map(
+                      (a) => html`<option value=${a}></option>`,
+                    )}
+                  </datalist>
+                  <datalist id="edit-printing-candidates">
+                    ${(this.candidates?.printingCompanies || []).map(
+                      (p) => html`<option value=${p}></option>`,
+                    )}
+                  </datalist>
+
+                  <label class="field-title">
+                    <span class="field-label">タイトル</span>
                     <input
                       class="input"
                       name="title"
                       type="text"
                       .value=${this.record.title}
+                      placeholder="作品タイトル"
                       required
                     />
                   </label>
+
                   <label>
-                    サークル名
-                    <input class="input" name="circle" type="text" .value=${this.record.circle} />
-                  </label>
-                  <label>
-                    著者/発行者
-                    <input class="input" name="author" type="text" .value=${this.record.author} />
-                  </label>
-                  <label>
-                    発行日
+                    <span class="field-label">サークル名</span>
                     <input
                       class="input"
-                      name="publishDate"
+                      name="circle"
                       type="text"
-                      .value=${this.record.publishDate}
+                      list="edit-circle-candidates"
+                      .value=${this.record.circle}
+                      placeholder="サークル名"
                     />
                   </label>
+
                   <label>
-                    印刷所
+                    <span class="field-label">著者/発行者</span>
                     <input
                       class="input"
-                      name="printingCompany"
+                      name="author"
                       type="text"
-                      .value=${this.record.printingCompany}
+                      list="edit-author-candidates"
+                      .value=${this.record.author}
+                      placeholder="著者名"
                     />
                   </label>
+
+                  <div class="fields-row">
+                    <label>
+                      <span class="field-label">発行日</span>
+                      <input
+                        class="input"
+                        name="publishDate"
+                        type="date"
+                        .value=${normalizeDateToInput(this.record.publishDate)}
+                      />
+                    </label>
+                    <label>
+                      <span class="field-label">印刷所</span>
+                      <input
+                        class="input"
+                        name="printingCompany"
+                        type="text"
+                        list="edit-printing-candidates"
+                        .value=${this.record.printingCompany}
+                        placeholder="印刷所名"
+                      />
+                    </label>
+                  </div>
+
                   <label>
-                    備考
-                    <input class="input" name="memo" type="text" .value=${this.record.memo} />
+                    <span class="field-label">備考（未分類テキスト・コピペ用）</span>
+                    <input
+                      class="input"
+                      name="memo"
+                      type="text"
+                      .value=${this.record.memo}
+                      placeholder="イベント名、連絡先、未分類テキストなど"
+                    />
                   </label>
+
                   <menu>
                     <button type="button" class="button secondary" @click=${this.handleClose}>
                       キャンセル

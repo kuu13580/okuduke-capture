@@ -11,7 +11,7 @@ import { extractWithBff } from "./services/bff-extractor.ts";
 import { processImageSource } from "./services/image-processor.ts";
 import type { ParsedOkuduke } from "./services/rule-extractor.ts";
 import { analytics } from "./services/analytics.ts";
-import { generateCsv, generateTsv, type OkudukeRecord } from "./types.ts";
+import { extractFieldCandidates, generateCsv, generateTsv, type OkudukeRecord } from "./types.ts";
 import { iconDownload, iconImage, iconScan } from "./ui/icons.ts";
 
 const STORAGE_KEY_RECORDS = "okuduke_records";
@@ -95,6 +95,50 @@ export class OkudukeApp extends LitElement {
     this.checkInstallationState();
     window.addEventListener("beforeinstallprompt", this.onBeforeInstallPrompt);
     window.addEventListener("appinstalled", this.onAppInstalled);
+
+    const params = new URLSearchParams(window.location.search);
+    const preview = params.get("preview");
+    if (preview) {
+      this.isInstalled = true;
+      if (this.records.length === 0) {
+        this.records = [
+          {
+            id: "sample-1",
+            title: "星屑のダイアログ",
+            circle: "銀河通信社",
+            author: "星野るな",
+            publishDate: "2026-08-16",
+            printingCompany: "日光企画",
+            memo: "コミックマーケット108新刊 初版",
+            scannedAt: "2026/10/05 00:00",
+          },
+          {
+            id: "sample-2",
+            title: "喫茶ポラリスの日常",
+            circle: "北極星工房",
+            author: "蒼井ミナト",
+            publishDate: "2026-05-04",
+            printingCompany: "緑陽社",
+            memo: "SUPER COMIC CITY 33",
+            scannedAt: "2026/10/05 00:05",
+          },
+        ];
+      }
+      if (preview === "sheet") {
+        this.isBottomSheetOpen = true;
+        this.pendingParsed = {
+          title: "夜明け前のプレリュード",
+          circle: "銀河通信社",
+          author: "星野るな",
+          publishDate: "2026-08-16",
+          printingCompany: "日光企画",
+          memo: "C108新刊 特典ペーパー付き",
+          rawText: "夜明け前のプレリュード...",
+        };
+      } else if (preview === "edit") {
+        this.editingRecord = this.records[0] || null;
+      }
+    }
   }
 
   override disconnectedCallback() {
@@ -435,6 +479,7 @@ export class OkudukeApp extends LitElement {
           .isAnalyzing=${this.isAnalyzing}
           .analysisProgress=${this.analysisProgress}
           .pendingParsed=${this.pendingParsed}
+          .candidates=${extractFieldCandidates(this.records)}
           @close=${this.closeBottomSheet}
           @confirm=${this.handleConfirmParsed}
         ></result-bottom-sheet>
@@ -473,6 +518,7 @@ export class OkudukeApp extends LitElement {
 
         <record-edit-dialog
           .record=${this.editingRecord}
+          .candidates=${extractFieldCandidates(this.records)}
           @save=${this.handleSaveEdit}
           @close=${() => {
             this.editingRecord = null;
