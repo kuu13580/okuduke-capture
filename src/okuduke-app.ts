@@ -11,6 +11,7 @@ import { extractWithBff } from "./services/bff-extractor.ts";
 import { isIosDevice } from "./services/device.ts";
 import { processImageSource } from "./services/image-processor.ts";
 import type { ParsedOkuduke } from "./services/rule-extractor.ts";
+import { requestPersistentStorage } from "./services/storage.ts";
 import { analytics } from "./services/analytics.ts";
 import { extractFieldCandidates, generateCsv, generateTsv, type OkudukeRecord } from "./types.ts";
 import { iconDownload, iconImage, iconScan } from "./ui/icons.ts";
@@ -84,6 +85,7 @@ export class OkudukeApp extends LitElement {
     this.isInstalled = true;
     this.isPwaModalOpen = false;
     this.deferredInstallPrompt = null;
+    requestPersistentStorage();
     this.showFeedback("アプリがホーム画面に追加されました");
   };
 
@@ -95,6 +97,7 @@ export class OkudukeApp extends LitElement {
     super.connectedCallback();
     this.loadState();
     this.checkInstallationState();
+    requestPersistentStorage();
     window.addEventListener("beforeinstallprompt", this.onBeforeInstallPrompt);
     window.addEventListener("appinstalled", this.onAppInstalled);
 
