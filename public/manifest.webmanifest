@@ -1,19 +1,50 @@
 {
+  "id": "/",
   "name": "奥付キャプチャー",
   "short_name": "奥付キャプチャー",
   "description": "同人誌の奥付をカメラで即座に連続スキャンしリスト化するツール",
+  "lang": "ja",
+  "dir": "ltr",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#f8fafc",
   "theme_color": "#0ea5e9",
+  "categories": ["utilities", "productivity", "books"],
   "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
     {
       "src": "/icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "奥付キャプチャーのメインスキャン画面"
     }
   ]
 }
