@@ -8,6 +8,7 @@ import "./components/record-list.ts";
 import "./components/result-bottom-sheet.ts";
 import "./components/scanner-view.ts";
 import { extractWithBff } from "./services/bff-extractor.ts";
+import { isIosDevice } from "./services/device.ts";
 import { processImageSource } from "./services/image-processor.ts";
 import type { ParsedOkuduke } from "./services/rule-extractor.ts";
 import { analytics } from "./services/analytics.ts";
@@ -86,13 +87,17 @@ export class OkudukeApp extends LitElement {
   };
 
   private get isIosDevice(): boolean {
-    return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+    return isIosDevice();
   }
 
   override connectedCallback() {
     super.connectedCallback();
     this.loadState();
     this.checkInstallationState();
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("openModal") === "true") {
+      this.isPwaModalOpen = true;
+    }
     window.addEventListener("beforeinstallprompt", this.onBeforeInstallPrompt);
     window.addEventListener("appinstalled", this.onAppInstalled);
   }

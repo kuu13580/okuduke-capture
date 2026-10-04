@@ -1,6 +1,21 @@
 import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { iconCheck, iconDownload, iconShare, iconSmartphone, iconX, iconZap } from "../ui/icons.ts";
+import {
+  type DeviceDetectionOptions,
+  isIosDevice,
+  isPlayStoreEligible,
+} from "../services/device.ts";
+import { PLAY_STORE_URL } from "../types.ts";
+import {
+  iconCheck,
+  iconDownload,
+  iconExternalLink,
+  iconGooglePlay,
+  iconShare,
+  iconSmartphone,
+  iconX,
+  iconZap,
+} from "../ui/icons.ts";
 
 @customElement("pwa-install-modal")
 export class PwaInstallModal extends LitElement {
@@ -14,11 +29,23 @@ export class PwaInstallModal extends LitElement {
   @property({ type: Boolean })
   hasInstallPrompt = false;
 
+  @property({ type: Object })
+  deviceOptions?: DeviceDetectionOptions;
+
+  private get isPreviewMode(): boolean {
+    if (typeof window === "undefined") return false;
+    const params = new URLSearchParams(window.location.search);
+    const preview = params.get("preview");
+    return preview === "android" || preview === "modal" || preview === "banner";
+  }
+
+  private get isAndroidDevice(): boolean {
+    if (this.isPreviewMode) return true;
+    return isPlayStoreEligible(this.deviceOptions);
+  }
+
   private get isIosDevice(): boolean {
-    const ua = navigator.userAgent;
-    const isIos = /iPad|iPhone|iPod/.test(ua);
-    const isMacTouch = /Macintosh/.test(ua) && navigator.maxTouchPoints > 1;
-    return (isIos || isMacTouch) && !(window as any).MSStream;
+    return isIosDevice(this.deviceOptions);
   }
 
   private handleClose() {
@@ -90,84 +117,157 @@ export class PwaInstallModal extends LitElement {
               </div>
             </div>
 
-            <div class="pwa-install-guide">
-              ${
-                this.isIosDevice
-                  ? html`
-                      <div class="install-steps">
-                        <div class="install-step-row">
-                          <span class="step-badge">1</span>
-                          <span class="step-desc">
-                            Safariの <strong>共有ボタン</strong> ${iconShare(15)} をタップ
-                          </span>
+            ${
+              this.isAndroidDevice
+                ? html`
+                    <div class="android-install-options">
+                      <a
+                        href=${PLAY_STORE_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="btn-play-store-primary"
+                        @click=${this.handleClose}
+                      >
+                        ${iconGooglePlay(24)}
+                        <div class="btn-play-store-text">
+                          <span class="btn-subtext">Google Play から</span>
+                          <strong class="btn-maintext">アプリをダウンロード</strong>
                         </div>
-                        <div class="install-step-row">
-                          <span class="step-badge">2</span>
-                          <span class="step-desc">
-                            メニューから <strong>「ホーム画面に追加」</strong> を選択
-                          </span>
-                        </div>
-                        <div class="install-step-row">
-                          <span class="step-badge">3</span>
-                          <span class="step-desc">
-                            右上の <strong>「追加」</strong> をタップすると完了
-                          </span>
-                        </div>
+                        ${iconExternalLink(16)}
+                      </a>
+
+                      <div class="install-divider">
+                        <span>またはブラウザ版をホーム画面に追加</span>
                       </div>
-                      <p class="guide-note">※ Safari以外のブラウザではSafariで開き直してください</p>
+
+                      <div class="pwa-install-guide">
+                        ${
+                          this.hasInstallPrompt
+                            ? html`
+                                <div class="install-steps">
+                                  <div class="install-step-row">
+                                    <span class="step-badge">1</span>
+                                    <span class="step-desc">
+                                      下の <strong>「ホーム画面に追加」ボタン</strong> をタップ
+                                    </span>
+                                  </div>
+                                </div>
+                              `
+                            : html`
+                                <div class="install-steps">
+                                  <div class="install-step-row">
+                                    <span class="step-badge">1</span>
+                                    <span class="step-desc">
+                                      ブラウザ右上メニュー <strong>「︙」</strong> をタップ
+                                    </span>
+                                  </div>
+                                  <div class="install-step-row">
+                                    <span class="step-badge">2</span>
+                                    <span class="step-desc">
+                                      <strong>「ホーム画面に追加」</strong> を選択
+                                    </span>
+                                  </div>
+                                </div>
+                              `
+                        }
+                      </div>
+                    </div>
+                  `
+                : this.isIosDevice
+                  ? html`
+                      <div class="pwa-install-guide">
+                        <div class="install-steps">
+                          <div class="install-step-row">
+                            <span class="step-badge">1</span>
+                            <span class="step-desc">
+                              Safariの <strong>共有ボタン</strong> ${iconShare(15)} をタップ
+                            </span>
+                          </div>
+                          <div class="install-step-row">
+                            <span class="step-badge">2</span>
+                            <span class="step-desc">
+                              メニューから <strong>「ホーム画面に追加」</strong> を選択
+                            </span>
+                          </div>
+                          <div class="install-step-row">
+                            <span class="step-badge">3</span>
+                            <span class="step-desc">
+                              右上の <strong>「追加」</strong> をタップすると完了
+                            </span>
+                          </div>
+                        </div>
+                        <p class="guide-note">
+                          ※ Safari以外のブラウザではSafariで開き直してください
+                        </p>
+                      </div>
                     `
-                  : this.hasInstallPrompt
-                    ? html`
-                        <div class="install-steps">
-                          <div class="install-step-row">
-                            <span class="step-badge">1</span>
-                            <span class="step-desc">
-                              下の <strong>「インストール」ボタン</strong> をタップ
-                            </span>
-                          </div>
-                          <div class="install-step-row">
-                            <span class="step-badge">2</span>
-                            <span class="step-desc">
-                              確認ダイアログで <strong>「インストール」</strong> を選択
-                            </span>
-                          </div>
-                        </div>
-                      `
-                    : html`
-                        <div class="install-steps">
-                          <div class="install-step-row">
-                            <span class="step-badge">1</span>
-                            <span class="step-desc">
-                              ブラウザ右上メニュー <strong>「︙」</strong> をタップ
-                            </span>
-                          </div>
-                          <div class="install-step-row">
-                            <span class="step-badge">2</span>
-                            <span class="step-desc">
-                              <strong>「アプリをインストール」</strong> または
-                              <strong>「ホーム画面に追加」</strong> を選択
-                            </span>
-                          </div>
-                        </div>
-                      `
-              }
-            </div>
+                  : html`
+                      <div class="pwa-install-guide">
+                        ${
+                          this.hasInstallPrompt
+                            ? html`
+                                <div class="install-steps">
+                                  <div class="install-step-row">
+                                    <span class="step-badge">1</span>
+                                    <span class="step-desc">
+                                      下の <strong>「インストール」ボタン</strong> をタップ
+                                    </span>
+                                  </div>
+                                  <div class="install-step-row">
+                                    <span class="step-badge">2</span>
+                                    <span class="step-desc">
+                                      確認ダイアログで <strong>「インストール」</strong> を選択
+                                    </span>
+                                  </div>
+                                </div>
+                              `
+                            : html`
+                                <div class="install-steps">
+                                  <div class="install-step-row">
+                                    <span class="step-badge">1</span>
+                                    <span class="step-desc">
+                                      ブラウザ右上メニュー <strong>「︙」</strong> をタップ
+                                    </span>
+                                  </div>
+                                  <div class="install-step-row">
+                                    <span class="step-badge">2</span>
+                                    <span class="step-desc">
+                                      <strong>「アプリをインストール」</strong> または
+                                      <strong>「ホーム画面に追加」</strong> を選択
+                                    </span>
+                                  </div>
+                                </div>
+                              `
+                        }
+                      </div>
+                    `
+            }
           </div>
 
           <div class="modal-box-footer pwa-modal-footer">
-            <button type="button" class="button secondary" @click=${this.handleClose}>後で</button>
+            <button type="button" class="button secondary" @click=${this.handleClose}>
+              ${this.isAndroidDevice ? "閉じる" : "後で"}
+            </button>
             ${
-              this.hasInstallPrompt
-                ? html`
-                    <button type="button" class="button" @click=${this.handleInstall}>
-                      ${iconDownload(16)} インストール
-                    </button>
-                  `
-                : html`
-                    <button type="button" class="button" @click=${this.handleClose}>
-                      ${iconCheck(16)} わかった
-                    </button>
-                  `
+              this.isAndroidDevice
+                ? this.hasInstallPrompt
+                  ? html`
+                      <button type="button" class="button secondary" @click=${this.handleInstall}>
+                        ${iconDownload(16)} ホーム画面に追加
+                      </button>
+                    `
+                  : ""
+                : this.hasInstallPrompt
+                  ? html`
+                      <button type="button" class="button" @click=${this.handleInstall}>
+                        ${iconDownload(16)} インストール
+                      </button>
+                    `
+                  : html`
+                      <button type="button" class="button" @click=${this.handleClose}>
+                        ${iconCheck(16)} わかった
+                      </button>
+                    `
             }
           </div>
         </div>

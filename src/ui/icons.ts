@@ -11,6 +11,7 @@ import {
   Copy,
   Download,
   Edit,
+  ExternalLink,
   Image,
   Plus,
   RefreshCw,
@@ -80,3 +81,21 @@ export const iconSmartphone = createIcon(Smartphone, 18);
 export const iconShare = createIcon(Share, 16);
 export const iconZap = createIcon(Zap, 18);
 export const iconShield = createIcon(Shield, 18);
+export const iconExternalLink = createIcon(ExternalLink, 16);
+
+export function iconGooglePlay(size = 20) {
+  return svg`
+    <svg
+      width="${size}"
+      height="${size}"
+      viewBox="0 0 512 512"
+      aria-hidden="true"
+      style="flex-shrink: 0;"
+    >
+      <path fill="#4285F4" d="M48.7 13.7C46.8 17.1 45.7 21.2 45.7 26.2v459.6c0 5 1.1 9.1 3 12.5l257.4-242.3L48.7 13.7z"/>
+      <path fill="#FBBC04" d="M371.3 323.5l-65.2-67.5L48.7 498.3c4.1 2.3 9.3 2.7 15.3-.7l307.3-174.1z"/>
+      <path fill="#EA4335" d="M64 14.4c-6-3.4-11.2-3-15.3-.7l257.4 242.3 65.2-67.5L64 14.4z"/>
+      <path fill="#34A853" d="M451.7 230.1L371.3 188.5 306.1 256l65.2 67.5 80.4-41.6c11.6-6.1 11.6-16.1 0-22.2l-.1.4.1-.6z"/>
+    </svg>
+  `;
+}
