@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>プライバシーポリシー - 奥付キャプチャー</title>
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <style>
+      :root {
+        --bg-main: #f8fafc;
+        --bg-card: #ffffff;
+        --text-main: #0f172a;
+        --text-muted: #64748b;
+        --primary: #0284c7;
+        --border: #e2e8f0;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg-main: #0f172a;
+          --bg-card: #1e293b;
+          --text-main: #f8fafc;
+          --text-muted: #94a3b8;
+          --primary: #38bdf8;
+          --border: #334155;
+        }
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        background-color: var(--bg-main);
+        color: var(--text-main);
+        line-height: 1.7;
+        padding: 24px 16px;
+      }
+      .container {
+        max-width: 720px;
+        margin: 0 auto;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 32px 24px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+      }
+      header {
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 20px;
+        margin-bottom: 28px;
+      }
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--primary);
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-bottom: 12px;
+      }
+      h1 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      .meta {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-top: 6px;
+      }
+      section {
+        margin-bottom: 28px;
+      }
+      h2 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      h2::before {
+        content: "";
+        display: inline-block;
+        width: 4px;
+        height: 1.15rem;
+        background: var(--primary);
+        border-radius: 2px;
+      }
+      p {
+        margin-bottom: 12px;
+        color: var(--text-main);
+        font-size: 0.95rem;
+      }
+      ul {
+        margin-left: 20px;
+        margin-bottom: 12px;
+        font-size: 0.95rem;
+        color: var(--text-main);
+      }
+      li {
+        margin-bottom: 6px;
+      }
+      .highlight-card {
+        background: var(--bg-main);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+        margin: 16px 0;
+      }
+      .highlight-card strong {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--text-main);
+      }
+      .highlight-card span {
+        font-size: 0.88rem;
+        color: var(--text-muted);
+      }
+      footer {
+        border-top: 1px solid var(--border);
+        padding-top: 20px;
+        margin-top: 36px;
+        text-align: center;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <a href="/" class="back-link">← 奥付キャプチャー トップへ戻る</a>
+        <h1>プライバシーポリシー</h1>
+        <p class="meta">制定日: 2026年10月4日 ｜ 最終改定日: 2026年10月4日</p>
+      </header>
+
+      <main>
+        <section>
+          <h2>1. はじめに</h2>
+          <p>
+            「奥付キャプチャー」（以下、「本サービス」といいます）は、同人誌等の奥付ページの文字認識・リスト化サービスを提供するにあたり、利用者のプライバシーを尊重し、個人情報の保護およびデータ管理方針を以下のとおり定めます。
+          </p>
+        </section>
+
+        <section>
+          <h2>2. 取り扱うデータおよび利用目的</h2>
+          <p>本サービスでは、機能提供および品質改善のために以下のデータを取り扱います。</p>
+
+          <div class="highlight-card">
+            <strong>① 撮影・選択された画像データ</strong>
+            <span
+              >奥付テキストの文字認識・抽出処理を行うため、撮影またはアップロードされた画像データのみを
+              Google Gemini API
+              に送信して解析します。画像は処理時にメモリ上でのみ一時的に扱われ、本サービスのサーバーや利用者の端末ストレージに保存・蓄積されることは一切ありません。</span
+            >
+          </div>
+
+          <div class="highlight-card">
+            <strong>② 抽出された奥付テキストデータ</strong>
+            <span
+              >画像から認識されたタイトル、サークル名、著者名、発行日、印刷所名などのテキストデータは、お使いの端末（ブラウザのローカルストレージ）にのみ保存されます。外部のサーバーへ自動送信・保管されることはありません。</span
+            >
+          </div>
+
+          <div class="highlight-card">
+            <strong>③ サービス利用状況の計測データ（Google アナリティクス）</strong>
+            <span
+              >機能の改善および利用傾向の把握のため、Google
+              アナリティクス（GA4）を使用し、機能利用回数（スキャン回数、TSV/CSV出力回数等）やページビューを匿名で計測しています。利用者のCookieを通じて仮名識別子（クライアントID）が使用されますが、画像データや奥付の内容（作品名・サークル名等）が計測パラメータに含まれることはありません。</span
+            >
+          </div>
+        </section>
+
+        <section>
+          <h2>3. データの第三者提供</h2>
+          <p>
+            本サービスは、上記に定めたAI画像解析（Google Gemini API）および利用状況計測（Google
+            アナリティクス）を除き、利用者の事前の同意なく個人データまたは利用データを第三者に提供・開示することはありません。ただし、法令に基づく正当な開示要請がある場合を除きます。
+          </p>
+        </section>
+
+        <section>
+          <h2>4. 安全管理措置</h2>
+          <p>
+            本サービスとの通信は、すべて TLS / HTTPS
+            による強力な暗号化通信を用いて行われ、通信経路上の盗聴・改ざんを防止しています。
+          </p>
+        </section>
+
+        <section>
+          <h2>5. プライバシーポリシーの変更</h2>
+          <p>
+            本ポリシーの内容は、法令の改正やサービスの機能追加・改善に伴い、事前の予告なく改定されることがあります。改定された最新のポリシーは、本ページに掲載された時点で効力を生じるものとします。
+          </p>
+        </section>
+
+        <section>
+          <h2>6. お問い合わせ窓口</h2>
+          <p>
+            本サービスのプライバシーポリシーおよびデータの取り扱いに関するご質問・ご要望は、以下の窓口までお問い合わせください。
+          </p>
+          <p>
+            <strong>奥付キャプチャー 運営</strong><br />
+            連絡先メールアドレス:
+            <a href="mailto:support@kuu13580.com" style="color: var(--primary)"
+              >support@kuu13580.com</a
+            >
+          </p>
+        </section>
+      </main>
+
+      <footer>&copy; 2026 奥付キャプチャー All rights reserved.</footer>
+    </div>
+  </body>
+</html>
