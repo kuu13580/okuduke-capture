@@ -66,6 +66,7 @@ export class OkudukeApp extends LitElement {
   private feedbackMessage = "";
 
   private currentAnalysisId = 0;
+  private isPreviewMode = false;
 
   private onBeforeInstallPrompt = (e: Event) => {
     e.preventDefault();
@@ -99,6 +100,7 @@ export class OkudukeApp extends LitElement {
     const params = new URLSearchParams(window.location.search);
     const preview = params.get("preview");
     if (preview) {
+      this.isPreviewMode = true;
       this.isInstalled = true;
       if (this.records.length === 0) {
         this.records = [
@@ -176,7 +178,9 @@ export class OkudukeApp extends LitElement {
 
   private saveRecords(records: OkudukeRecord[]) {
     this.records = records;
-    localStorage.setItem(STORAGE_KEY_RECORDS, JSON.stringify(records));
+    if (this.isPreviewMode) return;
+    const persistable = records.filter((r) => !r.id.startsWith("sample-"));
+    localStorage.setItem(STORAGE_KEY_RECORDS, JSON.stringify(persistable));
   }
 
   private openScanner() {
@@ -271,7 +275,8 @@ export class OkudukeApp extends LitElement {
       scannedAt: new Date().toLocaleString("ja-JP"),
     };
 
-    this.saveRecords([record, ...this.records]);
+    const actualRecords = this.records.filter((r) => !r.id.startsWith("sample-"));
+    this.saveRecords([record, ...actualRecords]);
     analytics.recordSave();
     this.closeBottomSheet();
     this.showFeedback(`「${record.title || "奥付"}」を追加しました（計${this.records.length}件）`);

@@ -3,7 +3,7 @@ import { customElement, property } from "lit/decorators.js";
 import { normalizeDateToInput } from "../services/date-formatter.ts";
 import type { ParsedOkuduke } from "../services/rule-extractor.ts";
 import type { FieldCandidates } from "../types.ts";
-import { iconPlus, iconX } from "../ui/icons.ts";
+import { iconCalendar, iconPlus, iconX } from "../ui/icons.ts";
 
 @customElement("result-bottom-sheet")
 export class ResultBottomSheet extends LitElement {
@@ -34,6 +34,43 @@ export class ResultBottomSheet extends LitElement {
 
   private handleClose() {
     this.dispatchEvent(new CustomEvent("close", { bubbles: true, composed: true }));
+  }
+
+  private handleOpenDatePicker(e: Event) {
+    const root = (e.currentTarget as HTMLElement).closest(".input-with-action");
+    if (!root) return;
+    const picker = root.querySelector<HTMLInputElement>(".sr-only-picker");
+    const textInput = root.querySelector<HTMLInputElement>('input[name="publishDate"]');
+    if (picker) {
+      if (textInput?.value) {
+        const normalized = normalizeDateToInput(textInput.value);
+        if (normalized) {
+          picker.value = normalized;
+        }
+      }
+      try {
+        if (typeof picker.showPicker === "function") {
+          picker.showPicker();
+        } else {
+          picker.focus();
+          picker.click();
+        }
+      } catch {
+        picker.focus();
+        picker.click();
+      }
+    }
+  }
+
+  private handleDateChange(e: Event) {
+    const picker = e.target as HTMLInputElement;
+    const root = picker.closest(".input-with-action");
+    if (!root) return;
+    const textInput = root.querySelector<HTMLInputElement>('input[name="publishDate"]');
+    if (textInput && picker.value) {
+      textInput.value = picker.value;
+      textInput.dispatchEvent(new Event("input", { bubbles: true }));
+    }
   }
 
   private handleSubmit(e: SubmitEvent) {
@@ -137,12 +174,32 @@ export class ResultBottomSheet extends LitElement {
                       <div class="fields-row">
                         <label>
                           <span class="field-label">発行日</span>
-                          <input
-                            class="input"
-                            name="publishDate"
-                            type="date"
-                            .value=${normalizeDateToInput(this.pendingParsed.publishDate)}
-                          />
+                          <div class="input-with-action">
+                            <input
+                              class="input"
+                              name="publishDate"
+                              type="text"
+                              .value=${this.pendingParsed.publishDate}
+                              placeholder="例: 2026-08-16 / 2026年夏"
+                            />
+                            <button
+                              type="button"
+                              class="btn-input-action"
+                              @click=${this.handleOpenDatePicker}
+                              title="カレンダーから日付を選択"
+                              aria-label="カレンダーから日付を選択"
+                            >
+                              ${iconCalendar(18)}
+                            </button>
+                            <input
+                              type="date"
+                              class="sr-only-picker"
+                              .value=${normalizeDateToInput(this.pendingParsed.publishDate)}
+                              @change=${this.handleDateChange}
+                              tabindex="-1"
+                              aria-hidden="true"
+                            />
+                          </div>
                         </label>
                         <label>
                           <span class="field-label">印刷所</span>
