@@ -84,3 +84,6 @@ export function extractFieldCandidates(records: OkudukeRecord[]): FieldCandidate
     printingCompanies: cleanAndUnique(records.map((r) => r.printingCompany)),
   };
 }
+
+export const PLAY_STORE_URL =
+  "https://play.google.com/store/apps/details?id=com.kuu13580.okuduke.twa";
