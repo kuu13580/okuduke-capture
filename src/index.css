@@ -186,11 +186,21 @@ button,
 /* メインコンテンツ: リスト一覧エリア */
 .main-content {
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   position: relative;
   width: 100%;
+}
+
+record-list {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  overflow: hidden;
 }
 
 /* サマリーバー (件数 ＆ TSV/CSVアクション) */
@@ -262,7 +272,10 @@ button,
 /* レコードカード一覧コンテナ */
 .records-container {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
   padding: 12px 16px calc(88px + env(safe-area-inset-bottom, 20px)) 16px;
   display: flex;
   flex-direction: column;
@@ -863,6 +876,8 @@ button,
   max-height: 85dvh;
   overflow-y: auto;
   overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
   box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.5);
   animation: slideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1);
   color: var(--text-main);
@@ -1067,10 +1082,12 @@ button,
   border-radius: 16px;
   width: 100%;
   max-width: 440px;
+  max-height: calc(100dvh - 40px);
   color: var(--text-main);
   box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .modal-box-header {
@@ -1092,6 +1109,10 @@ button,
   display: flex;
   flex-direction: column;
   gap: 16px;
+  overflow-y: auto;
+  min-height: 0;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
 }
 
 .modal-box-body label:not(.field-check-label) {
@@ -1166,6 +1187,10 @@ button,
   flex-direction: column;
   gap: 16px;
   padding: 20px;
+  overflow-y: auto;
+  min-height: 0;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
 }
 
 .pwa-hero {
@@ -1324,7 +1349,9 @@ button,
   gap: 10px;
   padding: 14px 18px;
   overflow-y: auto;
+  min-height: 0;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
 }
 
 .terms-card-list {
@@ -1388,6 +1415,10 @@ dialog#edit-dialog {
   border-radius: 16px;
   width: 90%;
   max-width: 440px;
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
   padding: 20px;
   box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
 }
@@ -1504,6 +1535,8 @@ dialog menu {
   padding: 16px 20px;
   max-height: calc(85dvh - 125px);
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
 }
 
 .detail-fields-list {

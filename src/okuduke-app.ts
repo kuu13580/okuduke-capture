@@ -139,6 +139,17 @@ export class OkudukeApp extends LitElement {
         };
       } else if (preview === "edit") {
         this.editingRecord = this.records[0] || null;
+      } else if (preview === "scroll") {
+        this.records = Array.from({ length: 8 }, (_, i) => ({
+          id: `sample-${i + 1}`,
+          title: `サンプル同人誌作品 その${i + 1}`,
+          circle: `サンプルサークル ${i + 1}`,
+          author: `作者名 ${i + 1}`,
+          publishDate: `2026-08-${String(10 + i).padStart(2, "0")}`,
+          printingCompany: "日光企画",
+          memo: `テスト備考 ${i + 1}`,
+          scannedAt: "2026/10/05 00:00",
+        }));
       }
     }
   }
