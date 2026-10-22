@@ -29,6 +29,25 @@ const app = new Hono<{ Bindings: Bindings }>();
 
 const MAX_PAYLOAD_BYTES = 2 * 1024 * 1024; // 2MB
 const ALLOWED_MODELS = new Set(["gemini-3.1-flash-lite", "gemini-2.5-flash"]);
+const ALLOWED_MIME_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/heic",
+  "image/heif",
+  "image/gif",
+]);
+
+// Gemini キーを使う BFF なので、自サイトのページからの呼び出し以外は弾く。
+// ブラウザは Sec-Fetch-Site を偽装できないため、付いていればそれだけで判定し、
+// 未対応の古いブラウザのみ Origin とリクエスト先 origin の一致で判定する。
+const isSameOriginRequest = (request: Request): boolean => {
+  const fetchSite = request.headers.get("sec-fetch-site");
+  if (fetchSite) return fetchSite === "same-origin";
+
+  const origin = request.headers.get("origin");
+  return origin !== null && origin === new URL(request.url).origin;
+};
 
 const readBodyWithinLimit = async (
   request: Request,
@@ -68,6 +87,10 @@ app.get("/api/health", (c) => {
 });
 
 app.post("/api/extract", async (c) => {
+  if (!isSameOriginRequest(c.req.raw)) {
+    return c.json({ error: "このAPIはアプリ内からのみ利用できます" }, 403);
+  }
+
   const limiter = c.env.RATE_LIMITER;
   if (limiter) {
     const clientIp =
@@ -124,6 +147,10 @@ app.post("/api/extract", async (c) => {
 
   if (!base64Data || !mimeType) {
     return c.json({ error: "画像データ（base64Data, mimeType）が不足しています" }, 400);
+  }
+
+  if (!ALLOWED_MIME_TYPES.has(mimeType)) {
+    return c.json({ error: "対応していない画像形式です" }, 400);
   }
 
   const prompt = `この画像は同人誌の奥付（おくづけ）ページです。
