@@ -25,5 +25,5 @@
       },
     },
   ],
-  "workers_dev": true,
+  "workers_dev": false,
 }

@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from "vitest";
 import app, { type RateLimitBinding } from "./index.ts";
 
 describe("Worker BFF API", () => {
@@ -21,6 +21,7 @@ describe("Worker BFF API", () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "Sec-Fetch-Site": "same-origin",
             "cf-connecting-ip": "203.0.113.195",
           },
           body: JSON.stringify({
@@ -52,6 +53,7 @@ describe("Worker BFF API", () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "Sec-Fetch-Site": "same-origin",
             "cf-connecting-ip": "203.0.113.195",
           },
           body: JSON.stringify({
@@ -71,6 +73,69 @@ describe("Worker BFF API", () => {
     });
   });
 
+  describe("Same-origin check", () => {
+    let fetchSpy: MockInstance<typeof fetch>;
+    beforeEach(() => {
+      fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+        Response.json({
+          candidates: [{ content: { parts: [{ text: JSON.stringify({ title: "t" }) }] } }],
+        }),
+      );
+    });
+    afterEach(() => {
+      fetchSpy.mockRestore();
+    });
+
+    const post = (
+      headers: Record<string, string>,
+      body: object = { base64Data: "test", mimeType: "image/jpeg" },
+    ) =>
+      app.request(
+        "https://okuduke.kuu13580.com/api/extract",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json", ...headers },
+          body: JSON.stringify(body),
+        },
+        { GEMINI_API_KEY: "dummy-key" },
+      );
+
+    it.each([
+      ["Sec-Fetch-Site: same-origin", { "Sec-Fetch-Site": "same-origin" }],
+      ["matching Origin without Sec-Fetch-Site", { Origin: "https://okuduke.kuu13580.com" }],
+    ])("allows %s", async (_, headers) => {
+      const res = await post(headers);
+      expect(res.status).toBe(200);
+      expect(fetchSpy).toHaveBeenCalledOnce();
+    });
+
+    it.each([
+      ["cross-site", { "Sec-Fetch-Site": "cross-site", Origin: "https://evil.example" }],
+      [
+        "Sec-Fetch-Site other than same-origin even if Origin matches",
+        { "Sec-Fetch-Site": "same-site", Origin: "https://okuduke.kuu13580.com" },
+      ],
+      ["Origin with a different scheme", { Origin: "http://okuduke.kuu13580.com" }],
+      ["opaque Origin", { Origin: "null" }],
+      ["no Sec-Fetch-Site and no Origin", {}],
+    ])("rejects %s with 403 without calling Gemini", async (_, headers) => {
+      const res = await post(headers);
+      expect(res.status).toBe(403);
+      expect(fetchSpy).not.toHaveBeenCalled();
+    });
+
+    it("rejects an unsupported mimeType with 400 without calling Gemini", async () => {
+      const res = await post(
+        { "Sec-Fetch-Site": "same-origin" },
+        { base64Data: "test", mimeType: "application/pdf" },
+      );
+      expect(res.status).toBe(400);
+      const json = (await res.json()) as { error: string };
+      expect(json.error).toContain("画像形式");
+      expect(fetchSpy).not.toHaveBeenCalled();
+    });
+  });
+
   describe("Payload and API key validation", () => {
     it("returns 413 when content-length exceeds 2MB", async () => {
       const res = await app.request(
@@ -79,6 +144,7 @@ describe("Worker BFF API", () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "Sec-Fetch-Site": "same-origin",
             "content-length": "3000000",
           },
           body: JSON.stringify({}),
@@ -100,6 +166,7 @@ describe("Worker BFF API", () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "Sec-Fetch-Site": "same-origin",
           },
           body: JSON.stringify({}),
         },
