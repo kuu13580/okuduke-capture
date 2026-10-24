@@ -15,6 +15,8 @@ const FIELDS: FieldDef[] = [
   { key: "author", label: "著者/発行者", getValue: (r) => r.author },
   { key: "publishDate", label: "発行日", getValue: (r) => r.publishDate },
   { key: "printingCompany", label: "印刷所", getValue: (r) => r.printingCompany },
+  { key: "pageCount", label: "ページ数", getValue: (r) => r.pageCount || "" },
+  { key: "size", label: "サイズ", getValue: (r) => r.size || "" },
   { key: "memo", label: "備考", getValue: (r) => r.memo },
   { key: "scannedAt", label: "スキャン日時", getValue: (r) => r.scannedAt },
 ];

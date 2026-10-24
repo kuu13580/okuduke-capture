@@ -2,7 +2,7 @@ import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { normalizeDateToInput } from "../services/date-formatter.ts";
 import type { ParsedOkuduke } from "../services/rule-extractor.ts";
-import type { FieldCandidates } from "../types.ts";
+import { DEFAULT_BOOK_SIZES, type FieldCandidates } from "../types.ts";
 import { iconCalendar, iconPlus, iconX } from "../ui/icons.ts";
 
 @customElement("result-bottom-sheet")
@@ -86,6 +86,8 @@ export class ResultBottomSheet extends LitElement {
       author: (formData.get("author") as string) || "",
       publishDate: (formData.get("publishDate") as string) || "",
       printingCompany: (formData.get("printingCompany") as string) || "",
+      pageCount: (formData.get("pageCount") as string) || "",
+      size: (formData.get("size") as string) || "",
       memo: (formData.get("memo") as string) || "",
       rawText: this.pendingParsed.rawText || "",
     };
@@ -122,6 +124,9 @@ export class ResultBottomSheet extends LitElement {
           </datalist>
           <datalist id="sheet-printing-candidates">
             ${(this.candidates?.printingCompanies || []).map((p) => html`<option value=${p}></option>`)}
+          </datalist>
+          <datalist id="sheet-size-candidates">
+            ${(this.candidates?.sizes || DEFAULT_BOOK_SIZES).map((s) => html`<option value=${s}></option>`)}
           </datalist>
 
           ${
@@ -210,6 +215,33 @@ export class ResultBottomSheet extends LitElement {
                             list="sheet-printing-candidates"
                             .value=${this.pendingParsed.printingCompany}
                             placeholder="印刷所名"
+                          />
+                        </label>
+                      </div>
+
+                      <div class="fields-row">
+                        <label>
+                          <span class="field-label">ページ数</span>
+                          <input
+                            class="input"
+                            name="pageCount"
+                            type="number"
+                            inputmode="numeric"
+                            min="1"
+                            step="1"
+                            .value=${this.pendingParsed.pageCount || ""}
+                            placeholder="例: 24"
+                          />
+                        </label>
+                        <label>
+                          <span class="field-label">サイズ</span>
+                          <input
+                            class="input"
+                            name="size"
+                            type="text"
+                            list="sheet-size-candidates"
+                            .value=${this.pendingParsed.size || ""}
+                            placeholder="例: B5 / A5"
                           />
                         </label>
                       </div>

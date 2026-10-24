@@ -1,3 +1,5 @@
+export const DEFAULT_BOOK_SIZES = ["B5", "A5", "A4", "B6", "文庫", "新書"] as const;
+
 export interface OkudukeRecord {
   id: string;
   title: string;
@@ -5,6 +7,8 @@ export interface OkudukeRecord {
   author: string;
   publishDate: string;
   printingCompany: string;
+  pageCount?: string;
+  size?: string;
   memo: string;
   scannedAt: string;
   isCompleted?: boolean;
@@ -18,6 +22,8 @@ export function generateTsv(records: OkudukeRecord[]): string {
     "著者/発行者",
     "発行日",
     "印刷所",
+    "ページ数",
+    "サイズ",
     "備考",
     "スキャン日時",
   ];
@@ -27,6 +33,8 @@ export function generateTsv(records: OkudukeRecord[]): string {
     r.author,
     r.publishDate,
     r.printingCompany,
+    r.pageCount ?? "",
+    r.size ?? "",
     r.memo,
     r.scannedAt,
   ]);
@@ -43,6 +51,8 @@ export function generateCsv(records: OkudukeRecord[]): string {
     "著者/発行者",
     "発行日",
     "印刷所",
+    "ページ数",
+    "サイズ",
     "備考",
     "スキャン日時",
   ];
@@ -52,6 +62,8 @@ export function generateCsv(records: OkudukeRecord[]): string {
     r.author,
     r.publishDate,
     r.printingCompany,
+    r.pageCount ?? "",
+    r.size ?? "",
     r.memo,
     r.scannedAt,
   ]);
@@ -72,16 +84,21 @@ export interface FieldCandidates {
   circles: string[];
   authors: string[];
   printingCompanies: string[];
+  sizes: string[];
 }
 
 export function extractFieldCandidates(records: OkudukeRecord[]): FieldCandidates {
   const cleanAndUnique = (values: (string | undefined)[]) =>
     Array.from(new Set(values.map((v) => v?.trim() || "").filter(Boolean)));
 
+  const customSizes = cleanAndUnique(records.map((r) => r.size));
+  const sizes = Array.from(new Set([...DEFAULT_BOOK_SIZES, ...customSizes]));
+
   return {
     circles: cleanAndUnique(records.map((r) => r.circle)),
     authors: cleanAndUnique(records.map((r) => r.author)),
     printingCompanies: cleanAndUnique(records.map((r) => r.printingCompany)),
+    sizes,
   };
 }
 

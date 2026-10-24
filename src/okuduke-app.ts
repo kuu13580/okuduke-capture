@@ -289,6 +289,8 @@ export class OkudukeApp extends LitElement {
       author: data.author || "",
       publishDate: data.publishDate || "",
       printingCompany: data.printingCompany || "",
+      pageCount: data.pageCount || "",
+      size: data.size || "",
       memo: data.memo || "",
       scannedAt: new Date().toLocaleString("ja-JP"),
     };
@@ -298,6 +300,21 @@ export class OkudukeApp extends LitElement {
     analytics.recordSave();
     this.closeBottomSheet();
     this.showFeedback(`「${record.title || "奥付"}」を追加しました（計${this.records.length}件）`);
+  }
+
+  private handleCreateRecord() {
+    this.editingRecord = {
+      id: "",
+      title: "",
+      circle: "",
+      author: "",
+      publishDate: "",
+      printingCompany: "",
+      pageCount: "",
+      size: "",
+      memo: "",
+      scannedAt: "",
+    };
   }
 
   private deleteRecord(id: string) {
@@ -340,6 +357,22 @@ export class OkudukeApp extends LitElement {
 
   private handleSaveEdit(e: CustomEvent<OkudukeRecord>) {
     const updated = e.detail;
+    if (!updated.id) {
+      const newRecord: OkudukeRecord = {
+        ...updated,
+        id: `rec-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        scannedAt: new Date().toLocaleString("ja-JP"),
+      };
+      const actualRecords = this.records.filter((r) => !r.id.startsWith("sample-"));
+      this.saveRecords([newRecord, ...actualRecords]);
+      analytics.recordSave();
+      this.editingRecord = null;
+      this.showFeedback(
+        `「${newRecord.title || "奥付"}」を追加しました（計${this.records.length}件）`,
+      );
+      return;
+    }
+
     this.saveRecords(this.records.map((r) => (r.id === updated.id ? updated : r)));
     this.editingRecord = null;
     if (this.selectedRecordForDetail?.id === updated.id) {
@@ -434,6 +467,7 @@ export class OkudukeApp extends LitElement {
         <main class="main-content">
           <record-list
             .records=${this.records}
+            @create=${this.handleCreateRecord}
             @select=${this.handleSelectRecord}
             @toggle-complete=${this.handleToggleComplete}
             @edit=${(e: CustomEvent<OkudukeRecord>) => {
