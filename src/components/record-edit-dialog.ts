@@ -21,7 +21,6 @@ export class RecordEditDialog extends LitElement {
       const dialog = this.querySelector<HTMLDialogElement>("dialog");
       if (dialog) {
         if (this.record && !dialog.open) {
-          this.querySelector<HTMLFormElement>("form")?.reset();
           dialog.showModal();
         } else if (!this.record && dialog.open) {
           dialog.close();
