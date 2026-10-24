@@ -1,7 +1,7 @@
 import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import type { OkudukeRecord } from "../types.ts";
-import { iconCopy, iconDownload, iconEdit, iconScan, iconTrash } from "../ui/icons.ts";
+import { iconCopy, iconDownload, iconEdit, iconPlus, iconScan, iconTrash } from "../ui/icons.ts";
 
 @customElement("record-list")
 export class RecordList extends LitElement {
@@ -11,6 +11,10 @@ export class RecordList extends LitElement {
 
   @property({ type: Array })
   records: OkudukeRecord[] = [];
+
+  private handleCreate() {
+    this.dispatchEvent(new CustomEvent("create", { bubbles: true, composed: true }));
+  }
 
   private handleCopyTsv() {
     this.dispatchEvent(new CustomEvent("copy-tsv", { bubbles: true, composed: true }));
@@ -108,6 +112,18 @@ export class RecordList extends LitElement {
       </div>
 
       <div class="records-container">
+        <div class="records-top-bar">
+          <button
+            type="button"
+            class="btn-add-manual"
+            @click=${this.handleCreate}
+            title="手入力で新規追加"
+            aria-label="手入力で新規追加"
+          >
+            ${iconPlus(18)}
+            <span>手入力で追加</span>
+          </button>
+        </div>
         ${
           this.records.length === 0
             ? html`
@@ -115,7 +131,7 @@ export class RecordList extends LitElement {
                   <div class="empty-icon">${iconScan(48)}</div>
                   <p class="empty-title">まだデータがありません</p>
                   <p class="empty-desc">
-                    同人誌の奥付をカメラでかざしてスキャンすると、ここに自動でリスト化されます。
+                    同人誌の奥付をカメラでかざしてスキャンするか、上の「＋」から手入力で追加できます。
                   </p>
                 </div>
               `
@@ -169,6 +185,14 @@ export class RecordList extends LitElement {
                             <span class="meta-item">
                               <span class="meta-key">印刷:</span>
                               <span class="meta-val">${r.printingCompany || "-"}</span>
+                            </span>
+                            <span class="meta-item">
+                              <span class="meta-key">ページ:</span>
+                              <span class="meta-val">${r.pageCount || "-"}</span>
+                            </span>
+                            <span class="meta-item">
+                              <span class="meta-key">サイズ:</span>
+                              <span class="meta-val">${r.size || "-"}</span>
                             </span>
                           </div>
                         </div>

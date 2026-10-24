@@ -6,6 +6,8 @@ export interface ParsedOkuduke {
   author: string;
   publishDate: string;
   printingCompany: string;
+  pageCount?: string;
+  size?: string;
   memo: string;
   rawText: string;
 }
@@ -153,6 +155,8 @@ export function createRecordFromParsed(parsed: ParsedOkuduke): OkudukeRecord {
     author: parsed.author,
     publishDate: parsed.publishDate,
     printingCompany: parsed.printingCompany,
+    pageCount: parsed.pageCount || "",
+    size: parsed.size || "",
     memo: parsed.memo,
     scannedAt: new Date().toLocaleString("ja-JP"),
   };

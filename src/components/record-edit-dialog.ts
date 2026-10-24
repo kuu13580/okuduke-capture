@@ -1,8 +1,8 @@
 import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { normalizeDateToInput } from "../services/date-formatter.ts";
-import type { FieldCandidates, OkudukeRecord } from "../types.ts";
-import { iconCalendar, iconCheck, iconX } from "../ui/icons.ts";
+import { DEFAULT_BOOK_SIZES, type FieldCandidates, type OkudukeRecord } from "../types.ts";
+import { iconCalendar, iconCheck, iconPlus, iconX } from "../ui/icons.ts";
 
 @customElement("record-edit-dialog")
 export class RecordEditDialog extends LitElement {
@@ -86,6 +86,8 @@ export class RecordEditDialog extends LitElement {
       author: (formData.get("author") as string) || "",
       publishDate: (formData.get("publishDate") as string) || "",
       printingCompany: (formData.get("printingCompany") as string) || "",
+      pageCount: (formData.get("pageCount") as string) || "",
+      size: (formData.get("size") as string) || "",
       memo: (formData.get("memo") as string) || "",
     };
 
@@ -99,6 +101,7 @@ export class RecordEditDialog extends LitElement {
   }
 
   render() {
+    const isNew = !this.record?.id;
     return html`
       <dialog id="edit-dialog">
         ${
@@ -106,7 +109,7 @@ export class RecordEditDialog extends LitElement {
             ? html`
                 <form method="dialog" @submit=${this.handleSubmit}>
                   <div class="dialog-header">
-                    <h3>奥付データの編集</h3>
+                    <h3>${isNew ? "奥付データの追加" : "奥付データの編集"}</h3>
                     <button type="button" class="btn-dialog-close" @click=${this.handleClose}>
                       ${iconX(18)}
                     </button>
@@ -125,6 +128,11 @@ export class RecordEditDialog extends LitElement {
                   <datalist id="edit-printing-candidates">
                     ${(this.candidates?.printingCompanies || []).map(
                       (p) => html`<option value=${p}></option>`,
+                    )}
+                  </datalist>
+                  <datalist id="edit-size-candidates">
+                    ${(this.candidates?.sizes || DEFAULT_BOOK_SIZES).map(
+                      (s) => html`<option value=${s}></option>`,
                     )}
                   </datalist>
 
@@ -207,6 +215,33 @@ export class RecordEditDialog extends LitElement {
                     </label>
                   </div>
 
+                  <div class="fields-row">
+                    <label>
+                      <span class="field-label">ページ数</span>
+                      <input
+                        class="input"
+                        name="pageCount"
+                        type="number"
+                        inputmode="numeric"
+                        min="1"
+                        step="1"
+                        .value=${this.record.pageCount || ""}
+                        placeholder="例: 24"
+                      />
+                    </label>
+                    <label>
+                      <span class="field-label">サイズ</span>
+                      <input
+                        class="input"
+                        name="size"
+                        type="text"
+                        list="edit-size-candidates"
+                        .value=${this.record.size || ""}
+                        placeholder="例: B5 / A5"
+                      />
+                    </label>
+                  </div>
+
                   <label>
                     <span class="field-label">備考（未分類テキスト・コピペ用）</span>
                     <input
@@ -222,7 +257,9 @@ export class RecordEditDialog extends LitElement {
                     <button type="button" class="button secondary" @click=${this.handleClose}>
                       キャンセル
                     </button>
-                    <button type="submit" class="button">${iconCheck(16)} 保存</button>
+                    <button type="submit" class="button">
+                      ${isNew ? iconPlus(16) : iconCheck(16)} ${isNew ? "追加" : "保存"}
+                    </button>
                   </menu>
                 </form>
               `
